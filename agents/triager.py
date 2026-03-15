@@ -3,11 +3,7 @@ What is MOCKED: Nothing.
 What is SIMULATED: Nothing.
 """
 
-import os
-
-from agent_framework.azure import AzureOpenAIResponsesClient
-from azure.identity import AzureCliCredential
-from dotenv import load_dotenv
+from azure_client import create_azure_openai_client
 
 RISK_ASSESSOR_INSTRUCTIONS = """You are the Risk Assessor agent in the MigrationOps Copilot system.
 
@@ -36,14 +32,7 @@ TRIAGER_INSTRUCTIONS = RISK_ASSESSOR_INSTRUCTIONS
 
 
 def create_risk_assessor_agent():
-    load_dotenv()
-
-    credential = AzureCliCredential()
-    client = AzureOpenAIResponsesClient(
-        endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-        deployment_name=os.environ["AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME"],
-        credential=credential,
-    )
+    client = create_azure_openai_client()
 
     return client.as_agent(
         name="RiskAssessor",

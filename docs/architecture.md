@@ -2,179 +2,177 @@
 
 ## Overview
 
-MigrationOps Copilot is a CLI-first, multi-agent migration validation system built on Microsoft Agent Framework and Azure OpenAI. It compares a known-good source site with a migrated target site, identifies risky differences, explains likely root causes, proposes remediation, and requires human approval before any simulated action is taken.
+MigrationOps Copilot validates a website migration by comparing a known source URL with a target URL, classifying the risk of the cutover, diagnosing unexpected differences, proposing remediation, and requiring human approval before any simulated action is taken.
 
-## High-Level Flow
+The system is intentionally narrow:
 
-1. The user runs `python main.py <source_url> <target_url>`.
-2. The discovery phase snapshots the source site with real SSL, HTTP, and DNS checks.
-3. The discovery phase snapshots the target site with the same real checks.
-4. A comparison engine produces a structured diff and overall risk level.
-5. The Risk Assessor agent evaluates whether the migration is safe.
-6. The Diagnostician agent explains why any blocking differences appeared.
-7. The Planner agent creates a prioritized remediation plan.
-8. A human approves or rejects the plan in the CLI.
-9. If approved, the Executor agent runs simulated remediation actions and a real post-action HTTP verification check.
+- real SSL, HTTP, and DNS checks
+- real Azure OpenAI reasoning
+- simulated remediation
+- CLI and web entry points
+- optional MCP-based discovery path
 
-## Agent Roles
+## Runtime Flow
 
-### Discovery
+1. A user provides a source URL and a target URL from the CLI or web UI.
+2. The discovery phase captures a live snapshot of both sites.
+3. `compare_snapshots()` builds a structured migration diff.
+4. The Risk Assessor agent classifies the migration as `CRITICAL`, `HIGH`, `MEDIUM`, or `LOW`.
+5. The Diagnostician agent explains the likely root causes.
+6. The Planner agent creates a prioritized remediation plan.
+7. A human either approves or rejects the plan.
+8. If approved, the Executor agent runs simulated remediation tools and a real HTTP verification check.
 
-- Implemented as plain Python functions in `tools/baseline.py`, not as an active agent in the main migration flow
-- Captures:
-  - SSL certificate state
-  - HTTP response behavior
-  - DNS resolution state
-- Produces:
-  - pre-migration snapshot
-  - post-migration snapshot
-  - structured comparison report
+## Discovery And Comparison
+
+### Direct discovery
+
+The default discovery path uses `snapshot_site(url)` from `tools/baseline.py`.
+
+For each URL it:
+
+- extracts the hostname
+- runs `check_ssl_certificate(hostname)`
+- runs `check_http_status(url)`
+- runs `check_dns_resolution(hostname)`
+- combines the results into a single JSON snapshot
+
+### Optional MCP discovery
+
+If `use_mcp=True` or `--mcp` is passed on the CLI:
+
+- `mcp_server/server.py` exposes the same health-check tools over MCP
+- `pipeline.py` creates a Discovery agent with `MCPStreamableHTTPTool`
+- the Discovery agent calls MCP tools and returns the same snapshot schema as the direct path
+
+This keeps MCP additive. The default path remains the most reliable for demos and judging.
+
+### Comparison engine
+
+`compare_snapshots(before, after)` produces:
+
+- a deduplicated list of findings
+- stable finding IDs such as `ssl_expired` and `http_status_failed`
+- severity levels
+- summary counts
+- `migration_health_score`
+- `overall_risk`
+
+Severity rules:
+
+- `critical`: SSL check failure, expired cert, failed HTTP verification, 5xx regression, DNS failure
+- `high`: SSL issuer/common-name changes, 2xx to 4xx regression
+- `warning`: expiring-soon certs, large expiry drop, >2x latency increase
+- `info`: DNS IP changes
+
+`migration_health_score` starts at 100 and subtracts:
+
+- 25 per critical finding
+- 15 per high finding
+- 5 per warning finding
+- 0 per info finding
+
+## Agents
 
 ### Risk Assessor
 
-- Implemented in `agents/triager.py`
-- Receives the migration comparison report
-- Classifies overall migration risk as `CRITICAL`, `HIGH`, `MEDIUM`, or `LOW`
-- Separates expected changes from unexpected or blocking changes
+- File: `agents/triager.py`
+- Input: migration comparison report
+- Output: overall risk, blocking issues, expected vs unexpected changes, recommendation
 
 ### Diagnostician
 
-- Implemented in `agents/diagnostician.py`
-- Receives the risk assessment
-- Performs root cause analysis for each migration issue
-- Categorizes problems such as:
-  - DNS propagation
-  - SSL configuration
-  - hosting mismatch
-  - application error
-  - expected change
+- File: `agents/diagnostician.py`
+- Input: risk assessment
+- Output: root cause analysis for each issue
 
 ### Planner
 
-- Implemented in `agents/planner.py`
-- Receives the diagnostics report
-- Produces a prioritized remediation plan
-- Splits recommendations into:
-  - Before Go-Live
-  - Post Go-Live Monitoring
+- File: `agents/planner.py`
+- Input: diagnostics report
+- Output: before-go-live and post-go-live remediation plan
 
 ### Executor
 
-- Implemented in `agents/executor.py`
-- Receives the approved remediation plan and migration context
-- Runs simulated remediation tools only
-- Performs a real HTTP verification check against the target URL
+- File: `agents/executor.py`
+- Input: approved plan plus migration context
+- Output: execution log, verification result, final status
 
-## Data Flow
+The Executor uses:
 
-### 1. Snapshot Collection
+- `simulate_cert_renewal`
+- `simulate_cache_purge`
+- `simulate_config_update`
+- `check_http_status`
 
-`snapshot_site(url)` in `tools/baseline.py`:
-- extracts the hostname from the URL
-- calls `check_ssl_certificate(hostname)`
-- calls `check_http_status(url)`
-- calls `check_dns_resolution(hostname)`
-- combines all three JSON results into one JSON snapshot
+Only the verification call is real.
 
-### 2. Baseline Comparison
+## Human Approval Flow
 
-`compare_snapshots(before, after)`:
-- parses the two snapshot JSON strings
-- compares key SSL, HTTP, and DNS fields
-- emits a list of structured changes with severity
-- calculates:
-  - total changes
-  - critical changes
-  - warning changes
-  - info changes
-  - overall risk
+The approval boundary exists in both interfaces:
 
-Key comparison rules include:
-- SSL expired or SSL error → critical
-- HTTP changed from healthy to failing → critical
-- DNS failure → critical
-- SSL issuer change → high
-- response time increase >2x → warning
-- DNS IP change → info
+- CLI: `main.py`
+- Web UI: `app.py` + `static/index.html`
 
-### 3. Agent Pipeline
+The user sees discovery, risk, diagnostics, and planning output first. The Executor only runs after explicit approval.
 
-The pipeline in `pipeline.py` uses manual orchestration:
+This keeps the system grounded and makes the demo safer: reasoning is live, but infrastructure mutation is simulated.
 
-1. Discovery builds the comparison report
-2. Risk Assessor runs on the comparison report
-3. Diagnostician runs on the Risk Assessor output
-4. Planner runs on the Diagnostician output
-5. Executor runs only after approval
+## Interfaces
 
-This keeps the implementation simple and reliable by passing `str(previous_output)` between stages.
+### CLI
 
-## Tooling
+```bash
+python main.py <source_url> <target_url> [--mcp]
+```
 
-### Real Tools
+### Web UI
 
-Defined in `tools/health_checks.py`:
+- `GET /` serves the single-page interface
+- `POST /api/analyze` runs the pipeline and stores the result in memory
+- `POST /api/execute` applies the approve/reject decision using the stored context
 
-- `check_ssl_certificate(hostname)`
-  - real TLS handshake
-  - returns certificate expiry and metadata
-- `check_http_status(url)`
-  - real HTTP request
-  - returns status code, latency, and redirect behavior
-- `check_dns_resolution(hostname)`
-  - real DNS lookup
-  - returns resolved IPs and timing
+The web UI uses transient in-memory state keyed by `analysis_id`. There is no persistent storage.
 
-### Simulated Tools
+## Authentication
 
-Defined in `tools/remediation.py`:
+`azure_client.py` centralizes Azure OpenAI client creation.
 
-- `simulate_cert_renewal(hostname)`
-- `simulate_cache_purge(hostname)`
-- `simulate_config_update(setting, value)`
+Supported auth paths:
 
-These are intentionally simulated and clearly labeled as such in both code and output.
+- `AZURE_OPENAI_API_KEY` if present
+- `AzureCliCredential` fallback for local development
 
-## Approval Flow
+This matters because local development is convenient with Azure CLI, but Azure App Service deployment is much more practical with API key auth for a hackathon prototype.
 
-The approval gate is implemented in `main.py`.
+## Azure Deployment Path
 
-- The user sees the discovery output, risk assessment, diagnostics, and remediation plan.
-- The CLI prompts:
-  - `Approve this migration remediation plan? (y/n):`
-- If rejected:
-  - execution stops cleanly
-- If approved:
-  - the Executor runs simulated remediation plus real verification
+The web UI is documented for Azure App Service deployment in `docs/azure-deploy.md`.
 
-This creates a human-in-the-loop safety boundary between reasoning and action.
+Supporting files:
 
-## Microsoft Technology Integration Points
+- `Procfile`
+- `startup.sh`
 
-### Microsoft Agent Framework
+The default deployment path uses direct discovery. The optional MCP path would require a separate MCP server process.
 
-- All five agents are created with `AzureOpenAIResponsesClient`
-- Real agent tools use the `@tool` decorator
-- The system uses the RC4 Agent Framework package already validated in the repo
+## CI
 
-### Azure OpenAI
+GitHub Actions workflow: `.github/workflows/ci.yml`
 
-- All reasoning agents use Azure OpenAI as the model backend
-- Credentials are supplied through `AzureCliCredential`
-- Endpoint and deployment are configured via `.env`
+It runs:
 
-### Azure MCP
+- syntax validation with `py_compile`
+- non-Azure tests:
+  - `tests/test_tools.py`
+  - `tests/test_baseline.py`
 
-- Not implemented in the current repo
-- The architecture leaves room to move discovery tools behind an MCP server later if needed
+Azure-backed tests are intentionally excluded from CI because they require credentials that are not available in GitHub Actions.
 
-### GitHub Copilot Agent Mode
+## Why This Architecture Fits The Hackathon
 
-- Used during development to accelerate implementation of the multi-agent workflow
-
-## Why This Architecture Works
-
-- It keeps data collection real and grounded in live network checks
-- It isolates high-risk infrastructure actions behind simulation and human approval
-- It uses specialized agents instead of one generic prompt
-- It creates an auditable migration workflow that is easy to demo and easy to extend
+- It uses Microsoft Agent Framework directly for the reasoning agents.
+- It has a real multi-stage handoff model instead of one generic prompt.
+- It includes an optional MCP integration path for hero-tech alignment.
+- It is narrow enough to demo clearly in under two minutes.
+- It is honest about simulation boundaries while still grounding the workflow in real data.

@@ -3,11 +3,7 @@ What is MOCKED: Nothing.
 What is SIMULATED: Nothing.
 """
 
-import os
-
-from agent_framework.azure import AzureOpenAIResponsesClient
-from azure.identity import AzureCliCredential
-from dotenv import load_dotenv
+from azure_client import create_azure_openai_client
 
 from tools.health_checks import (
     check_dns_resolution,
@@ -15,9 +11,9 @@ from tools.health_checks import (
     check_ssl_certificate,
 )
 
-MONITOR_INSTRUCTIONS = """You are the Monitor agent for SiteOps Guardian.
+MONITOR_INSTRUCTIONS = """You are the Monitor agent in the MigrationOps Copilot system.
 
-Your job is to assess the health of a single website incident target using all available tools.
+Your job is to assess the health of a single website target using all available tools.
 
 Rules:
 1. Always run all three tools for every investigation:
@@ -41,14 +37,7 @@ Rules:
 
 
 def create_monitor_agent():
-    load_dotenv()
-
-    credential = AzureCliCredential()
-    client = AzureOpenAIResponsesClient(
-        endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-        deployment_name=os.environ["AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME"],
-        credential=credential,
-    )
+    client = create_azure_openai_client()
 
     return client.as_agent(
         name="Monitor",

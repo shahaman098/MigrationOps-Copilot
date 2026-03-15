@@ -14,13 +14,22 @@ from pipeline import run_executor, run_migration_analysis
 async def main() -> None:
     load_dotenv()
 
-    if len(sys.argv) != 3:
-        print("Usage: python main.py <source_url> <target_url>")
+    args = sys.argv[1:]
+    use_mcp = False
+    if "--mcp" in args:
+        use_mcp = True
+        args = [arg for arg in args if arg != "--mcp"]
+
+    if len(args) != 2:
+        print("Usage: python main.py <source_url> <target_url> [--mcp]")
         raise SystemExit(1)
 
-    source_url = sys.argv[1]
-    target_url = sys.argv[2]
-    outputs = await run_migration_analysis(source_url, target_url)
+    source_url, target_url = args
+
+    if use_mcp:
+        print("[MCP] Using MCP server for health checks")
+
+    outputs = await run_migration_analysis(source_url, target_url, use_mcp=use_mcp)
 
     print("[DISCOVERY]")
     print(outputs["discovery"])

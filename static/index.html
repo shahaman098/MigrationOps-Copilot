@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MigrationOps Copilot</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --text: #162036;
+      --muted: #5f6b85;
+      --border: #d8e0ef;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+      --critical: #c62828;
+      --high: #ef6c00;
+      --medium: #f9a825;
+      --low: #2e7d32;
+      --accent: #005fb8;
+      --accent-soft: #e9f3ff;
+      --approve: #1b8f4b;
+      --reject: #c03221;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, #dcecff 0%, transparent 35%),
+        linear-gradient(180deg, #f7faff 0%, #eef3fb 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input[type="url"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fbfdff;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #005fb8, #0078d4);
+      color: #ffffff;
+    }
+
+    .approve {
+      background: var(--approve);
+      color: #ffffff;
+    }
+
+    .reject {
+      background: #fff1ef;
+      color: var(--reject);
+      border: 1px solid rgba(192, 50, 33, 0.18);
+    }
+
+    .status-bar {
+      min-height: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .results {
+      display: grid;
+      gap: 16px;
+    }
+
+    .step {
+      padding: 22px 24px;
+      display: none;
+      animation: rise 0.25s ease-out;
+    }
+
+    .step.visible {
+      display: block;
+    }
+
+    .step-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .badge.critical { background: var(--critical); }
+    .badge.high { background: var(--high); }
+    .badge.medium { background: var(--medium); color: #2b2500; }
+    .badge.low { background: var(--low); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8fbff;
+      border: 1px solid var(--border);
+    }
+
+    .metric-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .finding-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fcfdff;
+      padding: 14px 16px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    pre {
+      margin: 12px 0 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      color: #22314d;
+    }
+
+    .approval-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .spinner {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .spinner::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #d3deef;
+      border-top-color: var(--accent);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        padding-top: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">Migration Governance</div>
+      <h1>MigrationOps Copilot</h1>
+      <p class="subtitle">
+        Validate a source-to-target website migration with real SSL, HTTP, and DNS checks, then hand the findings to specialized AI agents for risk assessment, diagnosis, and remediation planning.
+      </p>
+    </header>
+
+    <section class="panel controls">
+      <div class="form-grid">
+        <label>
+          Source URL
+          <input id="sourceUrl" type="url" value="https://google.com" placeholder="https://source-site.com">
+        </label>
+        <label>
+          Target URL
+          <input id="targetUrl" type="url" value="https://expired.badssl.com" placeholder="https://target-site.com">
+        </label>
+      </div>
+      <div class="actions">
+        <label class="toggle">
+          <input id="useMcp" type="checkbox">
+          Route discovery through the MCP server
+        </label>
+        <button id="analyzeButton" class="primary">Run Migration Analysis</button>
+      </div>
+      <div id="statusBar" class="status-bar"></div>
+    </section>
+
+    <section class="results">
+      <article id="discoveryStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 1: Discovery</h2>
+          <span id="riskBadge" class="badge low">LOW</span>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <span class="metric-label">Health Score</span>
+            <span id="healthScore" class="metric-value">100</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Total Changes</span>
+            <span id="totalChanges" class="metric-value">0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Critical Findings</span>
+            <span id="criticalChanges" class="metric-value">0</span>
+          </div>
+        </div>
+        <ul id="findingList" class="finding-list"></ul>
+        <details>
+          <summary>Full comparison report</summary>
+          <pre id="discoveryOutput"></pre>
+        </details>
+      </article>
+
+      <article id="riskStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 2: Risk Assessment</h2>
+        </div>
+        <pre id="riskOutput"></pre>
+      </article>
+
+      <article id="diagnosticsStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 3: Diagnostics</h2>
+        </div>
+        <details open>
+          <summary>Diagnostics report</summary>
+          <pre id="diagnosticsOutput"></pre>
+        </details>
+      </article>
+
+      <article id="plannerStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 4: Remediation Plan</h2>
+        </div>
+        <details open>
+          <summary>Planned remediation</summary>
+          <pre id="plannerOutput"></pre>
+        </details>
+      </article>
+
+      <article id="approvalStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 5: Human Approval</h2>
+        </div>
+        <p class="subtitle">This is the governance gate. No remediation runs until you explicitly approve it.</p>
+        <div class="approval-actions">
+          <button id="approveButton" class="approve">Approve</button>
+          <button id="rejectButton" class="reject">Reject</button>
+        </div>
+      </article>
+
+      <article id="executionStep" class="panel step">
+        <div class="step-header">
+          <h2 class="step-title">Step 6: Execution</h2>
+        </div>
+        <pre id="executionOutput"></pre>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const sourceUrlInput = document.getElementById("sourceUrl");
+    const targetUrlInput = document.getElementById("targetUrl");
+    const useMcpInput = document.getElementById("useMcp");
+    const analyzeButton = document.getElementById("analyzeButton");
+    const approveButton = document.getElementById("approveButton");
+    const rejectButton = document.getElementById("rejectButton");
+    const statusBar = document.getElementById("statusBar");
+
+    const discoveryStep = document.getElementById("discoveryStep");
+    const riskStep = document.getElementById("riskStep");
+    const diagnosticsStep = document.getElementById("diagnosticsStep");
+    const plannerStep = document.getElementById("plannerStep");
+    const approvalStep = document.getElementById("approvalStep");
+    const executionStep = document.getElementById("executionStep");
+
+    const riskBadge = document.getElementById("riskBadge");
+    const healthScore = document.getElementById("healthScore");
+    const totalChanges = document.getElementById("totalChanges");
+    const criticalChanges = document.getElementById("criticalChanges");
+    const findingList = document.getElementById("findingList");
+    const discoveryOutput = document.getElementById("discoveryOutput");
+    const riskOutput = document.getElementById("riskOutput");
+    const diagnosticsOutput = document.getElementById("diagnosticsOutput");
+    const plannerOutput = document.getElementById("plannerOutput");
+    const executionOutput = document.getElementById("executionOutput");
+
+    let currentAnalysisId = null;
+
+    function resetSteps() {
+      for (const step of [discoveryStep, riskStep, diagnosticsStep, plannerStep, approvalStep, executionStep]) {
+        step.classList.remove("visible");
+      }
+      executionOutput.textContent = "";
+      currentAnalysisId = null;
+    }
+
+    function setStatus(message, spinning = false) {
+      statusBar.innerHTML = spinning ? `<span class="spinner">${message}</span>` : message;
+    }
+
+    function showStep(step) {
+      step.classList.add("visible");
+    }
+
+    function setRiskBadge(risk) {
+      riskBadge.textContent = risk;
+      riskBadge.className = "badge " + risk.toLowerCase();
+    }
+
+    function renderFindings(changes) {
+      findingList.innerHTML = "";
+      if (!changes.length) {
+        const item = document.createElement("li");
+        item.textContent = "No migration-breaking changes detected.";
+        findingList.appendChild(item);
+        return;
+      }
+
+      for (const change of changes) {
+        const item = document.createElement("li");
+        item.textContent = `${change.id}: ${change.description}`;
+        findingList.appendChild(item);
+      }
+    }
+
+    async function delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    analyzeButton.addEventListener("click", async () => {
+      resetSteps();
+      setStatus("Running discovery and agent analysis...", true);
+      analyzeButton.disabled = true;
+      approveButton.disabled = true;
+      rejectButton.disabled = true;
+
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            source_url: sourceUrlInput.value.trim(),
+            target_url: targetUrlInput.value.trim(),
+            use_mcp: useMcpInput.checked
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const data = await response.json();
+        currentAnalysisId = data.analysis_id;
+
+        setRiskBadge(data.discovery.risk_level);
+        healthScore.textContent = data.discovery.health_score;
+        totalChanges.textContent = data.discovery.summary.total_changes;
+        criticalChanges.textContent = data.discovery.summary.critical_changes;
+        renderFindings(data.discovery.changes);
+        discoveryOutput.textContent = data.discovery.comparison_report;
+        riskOutput.textContent = data.risk_assessor;
+        diagnosticsOutput.textContent = data.diagnostician;
+        plannerOutput.textContent = data.planner;
+
+        showStep(discoveryStep);
+        await delay(180);
+        showStep(riskStep);
+        await delay(180);
+        showStep(diagnosticsStep);
+        await delay(180);
+        showStep(plannerStep);
+        await delay(180);
+        showStep(approvalStep);
+
+        approveButton.disabled = false;
+        rejectButton.disabled = false;
+        setStatus("Analysis complete. Review the findings and choose whether to approve remediation.");
+      } catch (error) {
+        setStatus(`Analysis failed: ${error.message || error}`);
+      } finally {
+        analyzeButton.disabled = false;
+      }
+    });
+
+    async function executeDecision(approved) {
+      if (!currentAnalysisId) {
+        return;
+      }
+
+      approveButton.disabled = true;
+      rejectButton.disabled = true;
+      setStatus(approved ? "Executing approved remediation plan..." : "Recording rejection...", approved);
+
+      try {
+        const response = await fetch("/api/execute", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            analysis_id: currentAnalysisId,
+            approved
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const data = await response.json();
+        executionOutput.textContent = approved ? data.executor : data.message;
+        showStep(executionStep);
+        setStatus(approved ? "Execution completed." : "Migration plan rejected.");
+      } catch (error) {
+        setStatus(`Execution failed: ${error.message || error}`);
+      } finally {
+        approveButton.disabled = false;
+        rejectButton.disabled = false;
+      }
+    }
+
+    approveButton.addEventListener("click", () => executeDecision(true));
+    rejectButton.addEventListener("click", () => executeDecision(false));
+  </script>
+</body>
+</html>
