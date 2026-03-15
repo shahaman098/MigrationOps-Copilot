@@ -140,8 +140,8 @@ The web UI uses transient in-memory state keyed by `analysis_id`. There is no pe
 
 Supported auth paths:
 
-- `AZURE_OPENAI_API_KEY` if present
-- `AzureCliCredential` fallback for local development
+- `AzureCliCredential` for local development
+- `AZURE_OPENAI_API_KEY` for non-interactive and deployment-friendly environments
 
 This matters because local development is convenient with Azure CLI, but Azure App Service deployment is much more practical with API key auth for a hackathon prototype.
 

@@ -80,6 +80,8 @@ flowchart TD
 - Azure OpenAI Responses deployment
 - Azure CLI login or `AZURE_OPENAI_API_KEY`
 
+Local development works well with Azure CLI auth. Deployment and non-interactive environments can use `AZURE_OPENAI_API_KEY`.
+
 **Setup**
 
 ```bash
@@ -160,7 +162,7 @@ python -m pytest tests/test_pipeline.py -v
 
 ## Demo
 
-The repo is ready for the final 2-minute recording. Add the public demo URL here before submission.
+Public demo video link: add the real published URL before final submission.
 
 Suggested demo path:
 
@@ -174,31 +176,36 @@ Suggested demo path:
 
 ```text
 MigrationOps-Copilot/
+├── .gitignore
 ├── app.py
+├── azure_client.py
 ├── main.py
 ├── pipeline.py
-├── azure_client.py
+├── smoke_test.py
 ├── agents/
+│   ├── __init__.py
 │   ├── monitor.py
 │   ├── triager.py
 │   ├── diagnostician.py
 │   ├── planner.py
 │   └── executor.py
 ├── tools/
+│   ├── __init__.py
 │   ├── health_checks.py
 │   ├── remediation.py
 │   └── baseline.py
+├── mcp_server/
+│   ├── __init__.py
+│   ├── server.py
+│   └── README.md
+├── static/
+│   └── index.html
 ├── tests/
 │   ├── test_tools.py
 │   ├── test_monitor.py
 │   ├── test_baseline.py
 │   ├── test_agents.py
 │   └── test_pipeline.py
-├── mcp_server/
-│   ├── server.py
-│   └── README.md
-├── static/
-│   └── index.html
 ├── docs/
 │   ├── architecture.md
 │   └── azure-deploy.md
@@ -206,9 +213,9 @@ MigrationOps-Copilot/
 │   └── ci.yml
 ├── Procfile
 ├── startup.sh
+├── .env.example
 ├── DEMO_SCRIPT.md
 ├── requirements.txt
-├── .env.example
 └── LICENSE
 ```
 

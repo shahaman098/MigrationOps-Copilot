@@ -21,6 +21,7 @@ def simulate_cert_renewal(
         {
             "action": "cert_renewal",
             "hostname": hostname,
+            "simulated": True,
             "status": "simulated_success",
             "message": f"SIMULATED: Would trigger certificate renewal for {hostname}. No real infrastructure was changed.",
         },
@@ -39,6 +40,7 @@ def simulate_cache_purge(
         {
             "action": "cache_purge",
             "hostname": hostname,
+            "simulated": True,
             "status": "simulated_success",
             "message": f"SIMULATED: Would purge caches for {hostname}. No real infrastructure was changed.",
         },
@@ -59,6 +61,7 @@ def simulate_config_update(
             "action": "config_update",
             "setting": setting,
             "value": value,
+            "simulated": True,
             "status": "simulated_success",
             "message": f"SIMULATED: Would update config '{setting}' to '{value}'. No real infrastructure was changed.",
         },
