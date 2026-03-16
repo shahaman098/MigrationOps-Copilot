@@ -1,7 +1,7 @@
 # 🚀 MigrationOps Copilot
 
 <div align="center">
-  <img src="docs/logo.png" alt="MigrationOps Copilot Logo" width="400"/>
+  <img src="docs/screenshots/logo.png" alt="MigrationOps Copilot Logo" width="400"/>
 </div>
 
 [![Microsoft AI Dev Days Hackathon](https://img.shields.io/badge/Microsoft-AI%20Dev%20Days%20Hackathon%202026-blue)](https://aka.ms/aidevdayshackathon)
