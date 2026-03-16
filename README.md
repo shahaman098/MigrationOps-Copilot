@@ -1,5 +1,9 @@
 # 🚀 MigrationOps Copilot
 
+<div align="center">
+  <img src="docs/logo.png" alt="MigrationOps Copilot Logo" width="400"/>
+</div>
+
 [![Microsoft AI Dev Days Hackathon](https://img.shields.io/badge/Microsoft-AI%20Dev%20Days%20Hackathon%202026-blue)](https://aka.ms/aidevdayshackathon)
 [![Category: Build AI Apps & Agents](https://img.shields.io/badge/Category-Build%20AI%20Apps%20%26%20Agents-green)]()
 [![Category: Best Multi-Agent System](https://img.shields.io/badge/Category-Best%20Multi--Agent%20System-orange)]()
