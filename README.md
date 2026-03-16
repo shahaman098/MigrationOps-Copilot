@@ -1,5 +1,8 @@
 # MigrationOps Copilot 
 
+<div align="center">
+  <img src="docs/screenshots/logo.png" alt="MigrationOps Copilot Logo" width="400"/>
+</div>
 **An AI-assisted website migration validation layer that discovers, diagnoses, and remediates hidden infrastructure outages.**
 
 MigrationOps Copilot is an end-to-end, deterministic validation application that acts as an intelligent safety net for cloud migrations. By comparing live infrastructure snapshots of Source and Target environments, the system identifies anomalies across SSL certificates, DNS resolution, and HTTP health. Using Microsoft Agent Framework, it channels these findings through a rigorous AI triage pipeline—assessing risks, explaining root causes, generating remediation plans, and enforcing a human-in-the-loop approval gate before simulating infrastructure fixes.
