@@ -10,6 +10,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from pipeline import run_executor, run_migration_analysis
@@ -19,6 +20,9 @@ load_dotenv()
 app = FastAPI(title="MigrationOps Copilot")
 analysis_store: dict[str, dict[str, object]] = {}
 INDEX_PATH = Path(__file__).resolve().parent / "static" / "index.html"
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 class AnalyzeRequest(BaseModel):

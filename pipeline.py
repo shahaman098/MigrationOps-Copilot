@@ -11,7 +11,11 @@ from agents.diagnostician import create_diagnostician_agent
 from agents.executor import create_executor_agent
 from agents.planner import create_planner_agent
 from agents.triager import create_risk_assessor_agent
-from azure_client import create_azure_openai_client
+from azure_client import (
+    create_azure_openai_client,
+    get_mcp_server_url,
+    is_foundry_configured,
+)
 from tools.baseline import compare_snapshots, snapshot_site
 
 DISCOVERY_AGENT_INSTRUCTIONS = """You are the Discovery agent in the MigrationOps Copilot system.
@@ -129,6 +133,10 @@ async def _snapshot_site_via_mcp(discovery_agent, url: str) -> str:
     return json.dumps(snapshot)
 
 
+def _should_use_hosted_mcp(mcp_server_url: str) -> bool:
+    return is_foundry_configured() and mcp_server_url.lower().startswith("https://")
+
+
 async def run_migration_analysis(
     source_url: str,
     target_url: str,
@@ -139,17 +147,47 @@ async def run_migration_analysis(
     print(f"[DISCOVERY] Snapshotting source: {source_url}")
 
     if use_mcp:
-        from agent_framework import MCPStreamableHTTPTool
+        client = create_azure_openai_client()
+        mcp_server_url = get_mcp_server_url()
 
-        async with MCPStreamableHTTPTool(
-            name="health_checks",
-            url="http://localhost:8081/mcp",
-        ) as mcp_tool:
-            discovery_agent = _create_mcp_discovery_agent(mcp_tool)
+        if _should_use_hosted_mcp(mcp_server_url):
+            print(f"[MCP] Using Azure-hosted MCP server: {mcp_server_url}")
+            mcp_tool = client.get_mcp_tool(
+                name="health_checks",
+                url=mcp_server_url,
+                description="Live SSL, HTTP, and DNS checks for migration validation.",
+                allowed_tools=[
+                    "check_ssl_certificate",
+                    "check_http_status",
+                    "check_dns_resolution",
+                ],
+                approval_mode="never_require",
+            )
+            discovery_agent = _create_mcp_discovery_agent([mcp_tool])
             before_snapshot_json = await _snapshot_site_via_mcp(discovery_agent, source_url)
 
             print(f"[DISCOVERY] Snapshotting target: {target_url}")
             after_snapshot_json = await _snapshot_site_via_mcp(discovery_agent, target_url)
+        else:
+            from agent_framework import MCPStreamableHTTPTool
+
+            if is_foundry_configured() and not mcp_server_url.lower().startswith("https://"):
+                print(
+                    "[MCP] Foundry is configured, but MCP_SERVER_URL is not public HTTPS. "
+                    "Falling back to direct local MCP client mode.",
+                )
+            else:
+                print(f"[MCP] Using local MCP server: {mcp_server_url}")
+
+            async with MCPStreamableHTTPTool(
+                name="health_checks",
+                url=mcp_server_url,
+            ) as mcp_tool:
+                discovery_agent = _create_mcp_discovery_agent(mcp_tool)
+                before_snapshot_json = await _snapshot_site_via_mcp(discovery_agent, source_url)
+
+                print(f"[DISCOVERY] Snapshotting target: {target_url}")
+                after_snapshot_json = await _snapshot_site_via_mcp(discovery_agent, target_url)
     else:
         before_snapshot_json = await snapshot_site(source_url)
 

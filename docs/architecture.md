@@ -2,6 +2,16 @@
 
 This document expands on the implementation and structural design of MigrationOps Copilot.
 
+The repo supports two Azure-backed reasoning modes:
+
+- direct Azure OpenAI via `AZURE_OPENAI_ENDPOINT`
+- optional Azure AI project endpoint / Foundry-compatible mode via `AZURE_AI_PROJECT_ENDPOINT`
+
+The MCP path is optional:
+
+- default local MCP client mode for local testing
+- hosted MCP tool mode when `AZURE_AI_PROJECT_ENDPOINT` and a public HTTPS `MCP_SERVER_URL` are configured
+
 ## System Architecture: Data Flow
 
 Data precisely cascades down the sequence. An agent only sees the prompt constraint, the tool outputs, and the raw text transmitted from the previous agent.
@@ -19,7 +29,7 @@ flowchart LR
 
 - **Sequential Pipeline vs Autonomous Loop:** By strictly moving from Discovery -> Triager -> Planner, the system limits the LLM's capability to hallucinate context or loop endlessly on simple tasks.
 - **Data Grounding:** The foundation of all reasoning is a structured, deterministically compared JSON diff (`before_snapshot` vs `after_snapshot`). The LLM does not perform the inspection; it only interprets the hard data.
-- **Security-First Mutability:** Destructive tooling (`tools/remediation.py`) explicitly mocks out its behavior. The orchestration logic is proven while keeping environments 100% safe.
+- **Security-First Mutability:** Destructive tooling (`tools/remediation.py`) is simulated. The orchestration logic is proven while keeping environments safe.
 
 ## Key Modules
 
@@ -42,8 +52,8 @@ flowchart LR
 ## Architecture Decisions
 
 **Observed:**
-- **Human Governance Native:** The approval step is physically hard-coded into `main.py` and decoupled cleanly in `app.py` via asynchronous polling mechanisms. The system assumes autonomous mutation on infrastructure is fundamentally unsafe without a gate.
-- **Model Context Protocol Validation:** By abstracting the network tools through an MCP Server, the repository proves that external logic networks can safely audit an environment even if the agent processing lives securely off-premises.
+- **Human Governance Native:** The approval step is physically hard-coded into `main.py` and split cleanly in `app.py` across separate `/api/analyze` and `/api/execute` calls. The system assumes autonomous mutation on infrastructure is fundamentally unsafe without a gate.
+- **Model Context Protocol Validation:** The discovery tools can run either through a local MCP client path or a hosted MCP tool path when the Azure-backed client is configured with a public MCP server URL.
 
 **Inferred:**
 - **Ephemeral State Architecture:** In `app.py`, state is held loosely in a Python global dictionary (`analysis_store`). This removes database scaffolding dependencies for the Hackathon context, implying it's optimized for stateless rapid deployment (e.g., Azure App Service containers).
@@ -62,6 +72,4 @@ flowchart LR
 
 ## Why this repo is technically interesting
 
-MigrationOps Copilot demonstrates a masterclass in **Agentic Workflow Mapping**. Most initial LLM AI deployments errantly assign infinite tooling arrays to a single unbounded agent, resulting in context confusion, looping, and unpredictable infrastructure states. 
-
-This repository enforces a **Supply Chain of AI Reasoning**. It fuses System 1 reasoning (deterministic, rapid Python network IO) perfectly with System 2 reasoning (deliberate, multi-stage Agent Swarms). It uses explicit sequential boundaries, effectively stopping hallucinations at the perimeter. It is a premium, structurally-sound exploration of modern SRE automation.
+MigrationOps Copilot keeps the real-vs-simulated boundary explicit. Discovery, comparison, and verification are grounded in live network checks, while remediation stays simulated. The repo also supports both a direct Azure OpenAI path and a project-endpoint / hosted-MCP path without changing the user-facing CLI or web API.

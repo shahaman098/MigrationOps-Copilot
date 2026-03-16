@@ -6,141 +6,788 @@
   <title>MigrationOps Copilot</title>
   <style>
     :root {
-      --bg: #f3f6fb;
-      --panel: #ffffff;
-      --text: #162036;
-      --muted: #5f6b85;
-      --border: #d8e0ef;
-      --shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
-      --critical: #c62828;
-      --high: #ef6c00;
-      --medium: #f9a825;
-      --low: #2e7d32;
-      --accent: #005fb8;
-      --accent-soft: #e9f3ff;
-      --approve: #1b8f4b;
-      --reject: #c03221;
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #141414;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #222222;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-medium: rgba(255, 255, 255, 0.15);
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --accent-blue: #2563eb;
+      --accent-teal: #0ea5e9;
+      --accent-violet: #7c3aed;
+      --risk-critical: #ef4444;
+      --risk-high: #f97316;
+      --risk-medium: #eab308;
+      --risk-low: #22c55e;
+      --simulated-badge: #d97706;
+      --success: #22c55e;
+      --warning: #eab308;
+      --error: #ef4444;
+      --shadow-heavy: 0 20px 48px rgba(0, 0, 0, 0.32);
+      --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.22);
+      --ring-track: rgba(255, 255, 255, 0.08);
+      --radius-card: 12px;
+      --radius-input: 8px;
+      --radius-badge: 999px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-mono: "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      color-scheme: dark;
+    }
+
     body {
       margin: 0;
-      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, #dcecff 0%, transparent 35%),
-        linear-gradient(180deg, #f7faff 0%, #eef3fb 100%);
-      color: var(--text);
       min-height: 100vh;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 28%),
+        radial-gradient(circle at 20% 0%, rgba(14, 165, 233, 0.12), transparent 22%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0, transparent 1px),
+        linear-gradient(180deg, var(--bg-primary) 0%, #0d0d0d 100%);
+      background-size: auto, auto, 72px 72px, 72px 72px, auto;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(10, 10, 10, 0.1), rgba(10, 10, 10, 0.55));
+      z-index: -1;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 24%, rgba(14, 165, 233, 0.08), transparent 18%),
+        radial-gradient(circle at 82% 12%, rgba(37, 99, 235, 0.12), transparent 20%),
+        radial-gradient(circle at 72% 72%, rgba(56, 189, 248, 0.06), transparent 18%);
+      z-index: -2;
+    }
+
+    .ambient-scene {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+      isolation: isolate;
+    }
+
+    .ambient-scene::before,
+    .ambient-scene::after {
+      content: "";
+      position: absolute;
+      inset: -12%;
+      pointer-events: none;
+      opacity: 0.22;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .ambient-scene::before {
+      background:
+        radial-gradient(circle at 18% 28%, rgba(14, 165, 233, 0.2), transparent 18%),
+        radial-gradient(circle at 78% 16%, rgba(37, 99, 235, 0.18), transparent 18%),
+        radial-gradient(circle at 58% 72%, rgba(124, 58, 237, 0.12), transparent 20%);
+      filter: blur(24px);
+      animation: driftAurora 26s ease-in-out infinite;
+    }
+
+    .ambient-scene::after {
+      background:
+        linear-gradient(115deg, transparent 20%, rgba(59, 130, 246, 0.06) 42%, transparent 58%),
+        linear-gradient(90deg, transparent 12%, rgba(14, 165, 233, 0.04) 48%, transparent 82%);
+      mix-blend-mode: screen;
+      animation: meshSweep 28s linear infinite;
+    }
+
+    .ambient-grid,
+    .ambient-orb,
+    .ambient-beam,
+    .ambient-node,
+    .ambient-cloud,
+    .ambient-trace {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .ambient-grid {
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: 88px 88px;
+      mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.9), transparent 82%);
+      opacity: 0.45;
+      animation: gridPulse 18s ease-in-out infinite;
+    }
+
+    .ambient-orb {
+      border-radius: 50%;
+      filter: blur(6px);
+      opacity: 0.42;
+      animation: floatOrb 18s ease-in-out infinite;
+    }
+
+    .ambient-orb--one {
+      top: 6%;
+      left: -3%;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.24), transparent 70%);
+    }
+
+    .ambient-orb--two {
+      top: 18%;
+      right: 8%;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.2), transparent 72%);
+      animation-duration: 22s;
+      animation-delay: -5s;
+    }
+
+    .ambient-orb--three {
+      bottom: -8%;
+      left: 38%;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.14), transparent 72%);
+      animation-duration: 24s;
+      animation-delay: -9s;
+    }
+
+    .ambient-beam {
+      border-radius: 999px;
+      transform: rotate(-14deg);
+      opacity: 0.16;
+      filter: blur(1px);
+      animation: driftBeam 20s linear infinite;
+    }
+
+    .ambient-beam--one {
+      top: 8%;
+      right: 12%;
+      width: 420px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.68), transparent);
+    }
+
+    .ambient-beam--two {
+      top: 42%;
+      left: 10%;
+      width: 360px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.52), transparent);
+      animation-duration: 26s;
+      animation-delay: -7s;
+    }
+
+    .ambient-node {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(191, 219, 254, 0.9);
+      box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.06), 0 0 20px rgba(56, 189, 248, 0.22);
+      animation: floatNode 14s ease-in-out infinite;
+    }
+
+    .ambient-node--one {
+      top: 20%;
+      left: 18%;
+    }
+
+    .ambient-node--two {
+      top: 30%;
+      right: 19%;
+      animation-delay: -3s;
+      animation-duration: 17s;
+    }
+
+    .ambient-node--three {
+      bottom: 24%;
+      left: 64%;
+      animation-delay: -8s;
+      animation-duration: 16s;
+    }
+
+    .ambient-cloud {
+      border-radius: 999px;
+      filter: blur(18px);
+      opacity: 0.16;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.3), rgba(124, 58, 237, 0.18), transparent);
+      animation: cloudDrift 24s ease-in-out infinite;
+    }
+
+    .ambient-cloud--one {
+      top: 10%;
+      left: 26%;
+      width: 220px;
+      height: 62px;
+    }
+
+    .ambient-cloud--two {
+      bottom: 18%;
+      right: 18%;
+      width: 260px;
+      height: 72px;
+      animation-duration: 30s;
+      animation-delay: -10s;
+    }
+
+    .ambient-trace {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.5), transparent);
+      opacity: 0.22;
+      filter: blur(0.4px);
+      animation: traceDrift 16s linear infinite;
+    }
+
+    .ambient-trace::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 24%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transform: translateY(-50%);
+      background: rgba(191, 219, 254, 0.95);
+      box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.08), 0 0 14px rgba(96, 165, 250, 0.18);
+    }
+
+    .ambient-trace--one {
+      top: 24%;
+      left: 24%;
+      width: 180px;
+      --trace-rotation: -12deg;
+      transform: rotate(-12deg);
+    }
+
+    .ambient-trace--two {
+      bottom: 28%;
+      right: 28%;
+      width: 220px;
+      --trace-rotation: 8deg;
+      transform: rotate(8deg);
+      animation-duration: 20s;
+      animation-delay: -5s;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 56px;
+      border-bottom: 1px solid var(--border-subtle);
+      background:
+        linear-gradient(90deg, rgba(14, 165, 233, 0.06), transparent 24%, transparent 76%, rgba(37, 99, 235, 0.08)),
+        rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar__inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand__logo-wrap {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 14px 32px rgba(14, 165, 233, 0.12);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand__logo {
+      height: 30px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 10px 24px rgba(14, 165, 233, 0.2));
+    }
+
+    .brand__text {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand__name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .brand__meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .topbar__badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .tech-badge,
+    .badge,
+    .chip,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.03);
+      white-space: nowrap;
     }
 
     .page {
-      max-width: 1100px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 48px 20px 64px;
+      padding: 40px 24px 72px;
+      position: relative;
     }
 
-    .hero {
+    .hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.65fr);
+      gap: 18px;
+      margin-bottom: 18px;
+      align-items: start;
+    }
+
+    .hero-card,
+    .pipeline-shell,
+    .card,
+    .aside-card,
+    .guide-card,
+    .rail-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before,
+    .pipeline-shell::before,
+    .card::before,
+    .aside-card::before,
+    .guide-card::before,
+    .rail-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.35), rgba(96, 165, 250, 0.2), transparent);
+      pointer-events: none;
+    }
+
+    .hero-card {
+      padding: 28px;
+      min-height: 100%;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -50px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 72%);
+      pointer-events: none;
+    }
+
+    .hero-aside {
       display: grid;
       gap: 16px;
-      margin-bottom: 28px;
+    }
+
+    .aside-card {
+      padding: 22px;
+    }
+
+    .aside-card--compact {
+      padding: 20px;
+    }
+
+    .aside-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #bfdbfe;
+      margin-bottom: 14px;
+    }
+
+    .aside-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .aside-copy {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .aside-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0 0;
+    }
+
+    .aside-metric {
+      padding: 14px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      min-width: 0;
+    }
+
+    .aside-metric strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .aside-metric span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1.45;
+    }
+
+    .aside-list {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+
+    .aside-list-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .aside-list-item::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.95), rgba(37, 99, 235, 0.95));
+      box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08);
+    }
+
+    .aside-panel-footer {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .signal-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .signal-card {
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.012));
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signal-card::after {
+      content: "";
+      position: absolute;
+      inset: auto auto -22px -22px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 72%);
+      pointer-events: none;
+    }
+
+    .signal-card__kicker {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .signal-card__title {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .signal-card__copy {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .guide-card {
+      padding: 18px;
+    }
+
+    .guide-kicker {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .guide-title {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .guide-copy {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .guide-stack {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .guide-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.028);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      width: fit-content;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: var(--radius-badge);
+      border: 1px solid rgba(37, 99, 235, 0.24);
+      background: rgba(37, 99, 235, 0.1);
+      color: #bfdbfe;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.02em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: 1.05;
+    .hero-title {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -0.03em;
     }
 
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
+    .hero-copy {
+      margin: 0 0 24px;
       max-width: 760px;
-      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-size: 14px;
       line-height: 1.6;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .controls {
-      padding: 24px;
-      display: grid;
-      gap: 16px;
-      margin-bottom: 24px;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
     }
 
-    label {
+    .field {
       display: grid;
       gap: 8px;
+    }
+
+    .field label {
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .input-shell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #111111;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-input);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .input-shell:focus-within {
+      border-color: rgba(37, 99, 235, 0.78);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+
+    .input-shell.is-invalid {
+      border-color: rgba(239, 68, 68, 0.85);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16);
+      animation: shake 0.28s ease-in-out;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      display: inline-flex;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .input-icon svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
 
     input[type="url"] {
       width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 15px;
-      color: var(--text);
-      background: #fbfdff;
+      padding: 12px 16px 12px 40px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: var(--font-mono);
     }
 
-    .actions {
+    input[type="url"]::placeholder {
+      color: #6b7280;
+    }
+
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 14px;
+      gap: 14px;
+      margin-bottom: 12px;
     }
 
     button {
+      appearance: none;
       border: none;
-      border-radius: 999px;
-      padding: 14px 20px;
-      font-size: 15px;
-      font-weight: 700;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       transform: translateY(-1px);
     }
 
@@ -150,275 +797,1800 @@
       transform: none;
     }
 
-    .primary {
-      background: linear-gradient(135deg, #005fb8, #0078d4);
+    .button-primary {
+      background: linear-gradient(180deg, #2f6bf6, #1d4ed8);
       color: #ffffff;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.28);
     }
 
-    .approve {
-      background: var(--approve);
-      color: #ffffff;
+    .button-primary:hover:not(:disabled) {
+      background: #1d4ed8;
     }
 
-    .reject {
-      background: #fff1ef;
-      color: var(--reject);
-      border: 1px solid rgba(192, 50, 33, 0.18);
+    .button-approve {
+      background: rgba(34, 197, 94, 0.16);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #dcfce7;
     }
 
-    .status-bar {
-      min-height: 24px;
-      font-size: 14px;
-      color: var(--muted);
+    .button-approve:hover:not(:disabled) {
+      background: rgba(34, 197, 94, 0.24);
     }
 
-    .results {
-      display: grid;
-      gap: 16px;
+    .button-reject {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.55);
+      color: #fca5a5;
     }
 
-    .step {
-      padding: 22px 24px;
-      display: none;
-      animation: rise 0.25s ease-out;
+    .button-reject:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.1);
     }
 
-    .step.visible {
-      display: block;
-    }
-
-    .step-header {
+    .hero-meta {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
     }
 
-    .step-title {
-      margin: 0;
-      font-size: 1.05rem;
+    .hero-note {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .badge {
+    .toggle {
       display: inline-flex;
       align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: #ffffff;
-    }
-
-    .badge.critical { background: var(--critical); }
-    .badge.high { background: var(--high); }
-    .badge.medium { background: var(--medium); color: #2b2500; }
-    .badge.low { background: var(--low); }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .metric {
-      padding: 14px;
-      border-radius: 16px;
-      background: #f8fbff;
-      border: 1px solid var(--border);
-    }
-
-    .metric-label {
-      display: block;
-      color: var(--muted);
+      gap: 10px;
+      color: var(--text-secondary);
       font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
-    }
-
-    .metric-value {
-      font-size: 1.5rem;
-      font-weight: 800;
-    }
-
-    .finding-list {
-      margin: 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 8px;
-      color: var(--muted);
-    }
-
-    details {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #fcfdff;
-      padding: 14px 16px;
-    }
-
-    summary {
       cursor: pointer;
-      font-weight: 700;
-      color: var(--text);
+      user-select: none;
     }
 
-    pre {
-      margin: 12px 0 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 13px;
-      color: #22314d;
+    .toggle input {
+      appearance: none;
+      width: 38px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .approval-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
+    .toggle input::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: transform 0.15s ease;
     }
 
-    .spinner {
+    .toggle input:checked {
+      background: rgba(37, 99, 235, 0.9);
+      border-color: rgba(37, 99, 235, 0.9);
+    }
+
+    .toggle input:checked::before {
+      transform: translateX(16px);
+    }
+
+    .status-bar {
+      margin-top: 14px;
+      min-height: 20px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .status-bar .spinner {
       display: inline-flex;
       align-items: center;
       gap: 10px;
     }
 
-    .spinner::before {
+    .status-bar .spinner::before {
       content: "";
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 2px solid #d3deef;
-      border-top-color: var(--accent);
+      border: 2px solid rgba(255, 255, 255, 0.16);
+      border-top-color: var(--accent-teal);
       animation: spin 0.8s linear infinite;
     }
 
+    .pipeline-shell {
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    .pipeline-shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 50%, rgba(14, 165, 233, 0.06), transparent 18%),
+        radial-gradient(circle at 88% 50%, rgba(37, 99, 235, 0.08), transparent 20%);
+      opacity: 0.8;
+    }
+
+    .pipeline-shell__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .pipeline-shell__title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .pipeline-shell__title strong {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .pipeline-shell__title span {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .pipeline {
+      min-width: 780px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(100px, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pipeline-step {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      overflow: visible;
+    }
+
+    .pipeline-step::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      width: 78px;
+      height: 54px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.16), transparent 70%);
+      opacity: 0;
+      transform: scale(0.82);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      filter: blur(10px);
+    }
+
+    .pipeline-step::after {
+      content: "";
+      position: absolute;
+      top: 17px;
+      left: calc(50% + 24px);
+      width: calc(100% - 48px);
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .pipeline-step:last-child::after {
+      display: none;
+    }
+
+    .pipeline-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+      z-index: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pipeline-dot::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: linear-gradient(120deg, transparent 18%, rgba(255, 255, 255, 0.28) 45%, transparent 68%);
+      opacity: 0;
+      transform: translateX(-135%);
+    }
+
+    .pipeline-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: inherit;
+      line-height: 1.35;
+      position: relative;
+      transition: color 0.18s ease;
+    }
+
+    .pipeline-step[data-state="active"] {
+      color: var(--text-primary);
+    }
+
+    .pipeline-step[data-state="active"]::before {
+      opacity: 1;
+      transform: scale(1);
+      animation: stageHalo 1.8s ease-in-out infinite;
+    }
+
+    .pipeline-step[data-state="active"] .pipeline-dot {
+      background: rgba(37, 99, 235, 0.18);
+      border-color: rgba(37, 99, 235, 0.8);
+      color: #dbeafe;
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08), 0 0 24px rgba(37, 99, 235, 0.18);
+      animation: pulse 1.2s ease-in-out infinite, dotGlow 2s ease-in-out infinite;
+    }
+
+    .pipeline-step[data-state="active"] .pipeline-dot::after {
+      opacity: 0.8;
+      animation: dotSweep 1.4s ease-in-out infinite;
+    }
+
+    .pipeline-step[data-state="active"] .pipeline-label {
+      color: #dbeafe;
+    }
+
+    .pipeline-step[data-state="active"]::after {
+      background:
+        linear-gradient(90deg, rgba(37, 99, 235, 0.18), rgba(14, 165, 233, 0.8), rgba(37, 99, 235, 0.18));
+      background-size: 200% 100%;
+      animation: connectorFlow 1.8s linear infinite;
+    }
+
+    .pipeline-step[data-state="complete"] {
+      color: var(--text-primary);
+    }
+
+    .pipeline-step[data-state="complete"]::before {
+      opacity: 0.55;
+      transform: scale(0.94);
+    }
+
+    .pipeline-step[data-state="complete"] .pipeline-dot {
+      background: rgba(37, 99, 235, 0.92);
+      border-color: rgba(37, 99, 235, 0.92);
+      color: #ffffff;
+      transform: scale(1.03);
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08), 0 0 18px rgba(37, 99, 235, 0.2);
+      animation: completeSettle 0.45s ease-out;
+    }
+
+    .pipeline-step[data-state="complete"]::after {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.62), rgba(14, 165, 233, 0.52));
+    }
+
+    .pipeline-step[data-state="blocked"] {
+      color: #fecaca;
+    }
+
+    .pipeline-step[data-state="blocked"]::before {
+      opacity: 0.5;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.16), transparent 70%);
+      transform: scale(0.94);
+    }
+
+    .pipeline-step[data-state="blocked"] .pipeline-dot {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: rgba(239, 68, 68, 0.78);
+      color: #fecaca;
+      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.06);
+    }
+
+    .pipeline-step[data-state="blocked"]::after {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.55), rgba(239, 68, 68, 0.2));
+    }
+
+    .results {
+      display: block;
+    }
+
+    .results-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .results-main {
+      display: grid;
+      gap: 16px;
+    }
+
+    .results-rail {
+      display: grid;
+      gap: 16px;
+      position: sticky;
+      top: 76px;
+    }
+
+    .rail-card {
+      padding: 18px;
+    }
+
+    .rail-card__title {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .rail-card__copy {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .rail-stat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .rail-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.028);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .rail-stat span {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .rail-stat strong {
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    .rail-checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .rail-checklist-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .rail-checklist-item::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      background: rgba(14, 165, 233, 0.95);
+      box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.08);
+    }
+
+    .card {
+      padding: 24px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out, border-color 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .card.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card.is-visible:hover,
+    .aside-card:hover,
+    .guide-card:hover,
+    .rail-card:hover,
+    .signal-card:hover {
+      border-color: rgba(125, 211, 252, 0.12);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card-title-group {
+      display: grid;
+      gap: 6px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .card-subtitle {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .badge-complete {
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      border-color: rgba(34, 197, 94, 0.22);
+    }
+
+    .badge-critical {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.3);
+      box-shadow: 0 10px 18px rgba(127, 29, 29, 0.12);
+    }
+
+    .badge-high {
+      background: rgba(249, 115, 22, 0.16);
+      color: #fed7aa;
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+
+    .badge-medium {
+      background: rgba(234, 179, 8, 0.14);
+      color: #fde68a;
+      border-color: rgba(234, 179, 8, 0.28);
+    }
+
+    .badge-low {
+      background: rgba(34, 197, 94, 0.14);
+      color: #bbf7d0;
+      border-color: rgba(34, 197, 94, 0.28);
+      box-shadow: 0 10px 18px rgba(20, 83, 45, 0.12);
+    }
+
+    .badge-neutral {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      border-color: var(--border-subtle);
+    }
+
+    .badge-simulated {
+      background: rgba(217, 119, 6, 0.16);
+      color: #fcd34d;
+      border-color: rgba(217, 119, 6, 0.34);
+    }
+
+    .badge-blocking {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-non-blocking {
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      border-color: rgba(34, 197, 94, 0.24);
+    }
+
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .snapshot-card {
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+      display: grid;
+      gap: 14px;
+    }
+
+    .snapshot-card__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .snapshot-card__title {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .snapshot-card__label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .snapshot-card__host {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      overflow-wrap: anywhere;
+    }
+
+    .snapshot-status-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .snapshot-status {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .snapshot-status:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-top: 4px;
+      background: var(--text-muted);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+    }
+
+    .status-dot.good {
+      background: var(--success);
+    }
+
+    .status-dot.warning {
+      background: var(--warning);
+    }
+
+    .status-dot.error {
+      background: var(--error);
+    }
+
+    .status-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .status-detail {
+      margin-top: 4px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .status-value {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .discovery-summary {
+      display: grid;
+      grid-template-columns: minmax(220px, 240px) 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .health-panel {
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .health-ring {
+      width: 154px;
+      height: 154px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--risk-low) 0deg, var(--risk-low) 360deg);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .health-ring::after {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .health-ring__content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 4px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .health-score {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .health-score-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-panel {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .summary-headline {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .summary-copy {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .summary-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .summary-metric {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      min-width: 110px;
+    }
+
+    .summary-metric strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .summary-metric span {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .finding-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .finding-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .finding-id {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    .finding-description {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .info-card {
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .info-card__label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .info-card__value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .recommendation-banner,
+    .approval-banner,
+    .eta-banner,
+    .final-status {
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .recommendation-banner strong,
+    .final-status strong,
+    .approval-banner strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .recommendation-banner.critical,
+    .approval-banner.error,
+    .final-status.error {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.26);
+      color: #fecaca;
+    }
+
+    .recommendation-banner.high,
+    .recommendation-banner.medium {
+      background: rgba(234, 179, 8, 0.1);
+      border-color: rgba(234, 179, 8, 0.24);
+      color: #fde68a;
+    }
+
+    .recommendation-banner.low,
+    .approval-banner.success,
+    .final-status.success,
+    .eta-banner {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.24);
+      color: #bbf7d0;
+    }
+
+    .issue-list,
+    .step-list,
+    .monitor-list,
+    .timeline,
+    .verification-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .issue-card,
+    .plan-step,
+    .monitor-item,
+    .timeline-item,
+    .verification-item {
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 14px 16px;
+    }
+
+    .issue-header,
+    .plan-step__header,
+    .timeline-item__header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .issue-title,
+    .plan-step__title,
+    .verification-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    .issue-meta,
+    .plan-step__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .issue-copy,
+    .plan-step__detail,
+    .monitor-item,
+    .timeline-item__body,
+    .verification-item,
+    .final-status {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .section-label {
+      margin: 18px 0 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(37, 99, 235, 0.16);
+      border: 1px solid rgba(37, 99, 235, 0.28);
+      color: #bfdbfe;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .plan-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .approval-card {
+      border-color: rgba(234, 179, 8, 0.28);
+      background:
+        radial-gradient(circle at top right, rgba(234, 179, 8, 0.14), transparent 34%),
+        linear-gradient(180deg, rgba(234, 179, 8, 0.05), rgba(255, 255, 255, 0.02)),
+        var(--bg-card);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, 0.22);
+    }
+
+    .approval-copy {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .approval-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 18px;
+      bottom: -16px;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-item:last-child::before {
+      display: none;
+    }
+
+    .timeline-item::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 18px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(217, 119, 6, 0.95);
+      box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.12);
+    }
+
+    .timeline-item__time {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .raw-details {
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      overflow: hidden;
+    }
+
+    .raw-details summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .raw-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .raw-details pre {
+      margin: 0;
+      padding: 0 16px 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      color: #d1d5db;
+      font-size: 13px;
+      line-height: 1.55;
+      font-family: var(--font-mono);
+    }
+
+    .error-card {
+      border-color: rgba(239, 68, 68, 0.28);
+      background: rgba(127, 29, 29, 0.18);
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .error-card p {
+      margin: 0;
+      color: #fecaca;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes floatOrb {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(18px, -14px, 0) scale(1.04);
+      }
     }
 
-    @media (max-width: 700px) {
+    @keyframes driftBeam {
+      0%,
+      100% {
+        transform: translateX(0) rotate(-14deg);
+        opacity: 0.12;
+      }
+      50% {
+        transform: translateX(26px) rotate(-12deg);
+        opacity: 0.22;
+      }
+    }
+
+    @keyframes floatNode {
+      0%,
+      100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.65;
+      }
+      50% {
+        transform: translateY(-12px) translateX(8px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes driftAurora {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(2%, -1.5%, 0) scale(1.03);
+      }
+    }
+
+    @keyframes meshSweep {
+      0% {
+        transform: translate3d(-5%, 0, 0);
+        opacity: 0.14;
+      }
+      50% {
+        transform: translate3d(4%, -1%, 0);
+        opacity: 0.24;
+      }
+      100% {
+        transform: translate3d(-5%, 0, 0);
+        opacity: 0.14;
+      }
+    }
+
+    @keyframes gridPulse {
+      0%,
+      100% {
+        opacity: 0.36;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes cloudDrift {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(22px, -10px, 0) scale(1.05);
+      }
+    }
+
+    @keyframes traceDrift {
+      0%,
+      100% {
+        transform: translateX(0) rotate(var(--trace-rotation, 0deg));
+      }
+      50% {
+        transform: translateX(14px) rotate(calc(var(--trace-rotation, 0deg) + 1deg));
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.06);
+      }
+    }
+
+    @keyframes stageHalo {
+      0%,
+      100% {
+        opacity: 0.48;
+        transform: scale(0.9);
+      }
+      50% {
+        opacity: 0.9;
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes dotGlow {
+      0%,
+      100% {
+        box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08), 0 0 18px rgba(37, 99, 235, 0.16);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.12), 0 0 28px rgba(14, 165, 233, 0.24);
+      }
+    }
+
+    @keyframes dotSweep {
+      0% {
+        transform: translateX(-135%);
+      }
+      55% {
+        transform: translateX(135%);
+      }
+      100% {
+        transform: translateX(135%);
+      }
+    }
+
+    @keyframes connectorFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
+    @keyframes completeSettle {
+      0% {
+        transform: scale(0.9);
+      }
+      65% {
+        transform: scale(1.08);
+      }
+      100% {
+        transform: scale(1.03);
+      }
+    }
+
+    body[data-flow-state="analyzing"] .ambient-scene::before,
+    body[data-flow-state="executing"] .ambient-scene::before {
+      opacity: 0.3;
+    }
+
+    body[data-flow-state="analyzing"] .pipeline-shell::after,
+    body[data-flow-state="executing"] .pipeline-shell::after {
+      opacity: 1;
+    }
+
+    body[data-flow-state="approval"] .ambient-scene::after {
+      opacity: 0.26;
+    }
+
+    body[data-flow-state="error"] .ambient-scene::before,
+    body[data-flow-state="rejected"] .ambient-scene::before {
+      opacity: 0.18;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(239, 68, 68, 0.18), transparent 18%),
+        radial-gradient(circle at 78% 16%, rgba(37, 99, 235, 0.1), transparent 18%),
+        radial-gradient(circle at 58% 72%, rgba(124, 58, 237, 0.08), transparent 20%);
+    }
+
+    @keyframes shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-5px);
+      }
+      75% {
+        transform: translateX(5px);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero-layout,
+      .results-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .discovery-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .results-rail {
+        position: static;
+      }
+
+      .guide-grid,
+      .signal-strip,
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
       .page {
-        padding-top: 32px;
+        padding: 28px 16px 56px;
+      }
+
+      .topbar__inner {
+        padding: 0 16px;
+      }
+
+      .form-grid,
+      .snapshot-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .card,
+      .aside-card,
+      .guide-card,
+      .rail-card {
+        padding: 20px;
+      }
+
+      .topbar__badges {
+        display: none;
+      }
+
+      .aside-metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .approval-actions {
+        flex-direction: column;
+      }
+
+      .approval-actions button {
+        width: 100%;
+      }
+
+      .footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand__logo-wrap {
+        width: 38px;
+        height: 38px;
+      }
+
+      .brand__logo {
+        height: 26px;
+      }
+
+      .hero-title {
+        font-size: 24px;
+      }
+
+      .hero-card,
+      .card,
+      .aside-card,
+      .guide-card,
+      .rail-card {
+        padding: 18px;
+      }
+
+      .health-ring {
+        width: 132px;
+        height: 132px;
+      }
+
+      .health-ring::after {
+        inset: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header class="hero">
-      <div class="eyebrow">Migration Governance</div>
-      <h1>MigrationOps Copilot</h1>
-      <p class="subtitle">
-        Validate a source-to-target website migration with real SSL, HTTP, and DNS checks, then hand the findings to specialized AI agents for risk assessment, diagnosis, and remediation planning.
-      </p>
-    </header>
-
-    <section class="panel controls">
-      <div class="form-grid">
-        <label>
-          Source URL
-          <input id="sourceUrl" type="url" value="https://google.com" placeholder="https://source-site.com">
-        </label>
-        <label>
-          Target URL
-          <input id="targetUrl" type="url" value="https://expired.badssl.com" placeholder="https://target-site.com">
-        </label>
-      </div>
-      <div class="actions">
-        <label class="toggle">
-          <input id="useMcp" type="checkbox">
-          Route discovery through the MCP server
-        </label>
-        <button id="analyzeButton" class="primary">Run Migration Analysis</button>
-      </div>
-      <div id="statusBar" class="status-bar"></div>
-    </section>
-
-    <section class="results">
-      <article id="discoveryStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 1: Discovery</h2>
-          <span id="riskBadge" class="badge low">LOW</span>
-        </div>
-        <div class="metrics">
-          <div class="metric">
-            <span class="metric-label">Health Score</span>
-            <span id="healthScore" class="metric-value">100</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Total Changes</span>
-            <span id="totalChanges" class="metric-value">0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Critical Findings</span>
-            <span id="criticalChanges" class="metric-value">0</span>
-          </div>
-        </div>
-        <ul id="findingList" class="finding-list"></ul>
-        <details>
-          <summary>Full comparison report</summary>
-          <pre id="discoveryOutput"></pre>
-        </details>
-      </article>
-
-      <article id="riskStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 2: Risk Assessment</h2>
-        </div>
-        <pre id="riskOutput"></pre>
-      </article>
-
-      <article id="diagnosticsStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 3: Diagnostics</h2>
-        </div>
-        <details open>
-          <summary>Diagnostics report</summary>
-          <pre id="diagnosticsOutput"></pre>
-        </details>
-      </article>
-
-      <article id="plannerStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 4: Remediation Plan</h2>
-        </div>
-        <details open>
-          <summary>Planned remediation</summary>
-          <pre id="plannerOutput"></pre>
-        </details>
-      </article>
-
-      <article id="approvalStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 5: Human Approval</h2>
-        </div>
-        <p class="subtitle">This is the governance gate. No remediation runs until you explicitly approve it.</p>
-        <div class="approval-actions">
-          <button id="approveButton" class="approve">Approve</button>
-          <button id="rejectButton" class="reject">Reject</button>
-        </div>
-      </article>
-
-      <article id="executionStep" class="panel step">
-        <div class="step-header">
-          <h2 class="step-title">Step 6: Execution</h2>
-        </div>
-        <pre id="executionOutput"></pre>
-      </article>
-    </section>
+  <div class="ambient-scene" aria-hidden="true">
+    <div class="ambient-grid"></div>
+    <span class="ambient-orb ambient-orb--one"></span>
+    <span class="ambient-orb ambient-orb--two"></span>
+    <span class="ambient-orb ambient-orb--three"></span>
+    <span class="ambient-cloud ambient-cloud--one"></span>
+    <span class="ambient-cloud ambient-cloud--two"></span>
+    <span class="ambient-beam ambient-beam--one"></span>
+    <span class="ambient-beam ambient-beam--two"></span>
+    <span class="ambient-trace ambient-trace--one"></span>
+    <span class="ambient-trace ambient-trace--two"></span>
+    <span class="ambient-node ambient-node--one"></span>
+    <span class="ambient-node ambient-node--two"></span>
+    <span class="ambient-node ambient-node--three"></span>
   </div>
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <div class="brand__logo-wrap">
+          <img class="brand__logo" src="/static/logo.svg" alt="MigrationOps Copilot logo">
+        </div>
+        <div class="brand__text">
+          <span class="brand__name">MigrationOps Copilot</span>
+          <span class="brand__meta">Migration Validation</span>
+        </div>
+      </div>
+      <div class="topbar__badges">
+        <span class="tech-badge">Microsoft Agent Framework</span>
+        <span class="tech-badge">Azure OpenAI</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero-layout">
+      <section class="hero-card">
+        <div class="eyebrow">Migration Validation Pipeline</div>
+        <h1 class="hero-title">Run a source-to-target migration analysis</h1>
+        <p class="hero-copy">
+          Compare live source and target environments using real SSL, HTTP, and DNS checks, then route the findings through a governed multi-agent workflow for risk assessment, diagnostics, and remediation planning.
+        </p>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="sourceUrl">Source URL</label>
+            <div class="input-shell" data-field="source">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1.5a6.5 6.5 0 1 0 0 13a6.5 6.5 0 0 0 0-13Zm0 0c1.7 0 3.08 2.91 3.08 6.5S9.7 14.5 8 14.5m0-13c-1.7 0-3.08 2.91-3.08 6.5S6.3 14.5 8 14.5m-5.9-4.5h11.8M2.1 5h11.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input id="sourceUrl" type="url" placeholder="https://source-site.com">
+            </div>
+          </div>
+          <div class="field">
+            <label for="targetUrl">Target URL</label>
+            <div class="input-shell" data-field="target">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none">
+                  <path d="M6.3 9.7 4.9 11.1a2.25 2.25 0 1 1-3.18-3.18l2.12-2.12A2.25 2.25 0 0 1 7.02 8.3m2.68-2.68 1.42-1.42a2.25 2.25 0 1 1 3.18 3.18l-2.12 2.12A2.25 2.25 0 0 1 8.98 7.7M5.7 10.3l4.6-4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input id="targetUrl" type="url" placeholder="https://target-site.com">
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button id="analyzeButton" class="button-primary">Run Migration Analysis</button>
+        </div>
+
+        <div class="hero-meta">
+          <div class="hero-note">
+            Compares source and target environments using real SSL, HTTP, and DNS checks.
+          </div>
+          <label class="toggle" for="useMcp">
+            <input id="useMcp" type="checkbox">
+            Use MCP discovery
+          </label>
+        </div>
+
+        <div id="statusBar" class="status-bar"></div>
+      </section>
+
+      <aside class="hero-aside">
+        <article class="aside-card">
+          <div class="aside-kicker">Mission Control</div>
+          <h2 class="aside-title">Grounded signals, staged reasoning, explicit governance.</h2>
+          <p class="aside-copy">
+            The UI is tuned for a fast demo: real network checks first, structured risk framing second, and a visible human approval gate before any simulated execution step.
+          </p>
+          <div class="aside-metric-grid">
+            <div class="aside-metric">
+              <strong>3</strong>
+              <span>Live discovery checks</span>
+            </div>
+            <div class="aside-metric">
+              <strong>4</strong>
+              <span>Reasoning stages</span>
+            </div>
+            <div class="aside-metric">
+              <strong>1</strong>
+              <span>Required approval gate</span>
+            </div>
+          </div>
+          <div class="aside-list">
+            <div class="aside-list-item">Direct Azure-backed agent flow remains unchanged. This layer only improves how evidence and decisions are surfaced.</div>
+            <div class="aside-list-item">Hosted MCP stays optional and is visually subordinate to the default reliable path.</div>
+            <div class="aside-list-item">Execution remains visibly simulated, with verification and final status separated from action logs.</div>
+          </div>
+        </article>
+
+        <article class="aside-card aside-card--compact">
+          <div class="aside-kicker">Demo Lens</div>
+          <p class="aside-copy">
+            Best screenshot path: run a broken migration first to surface a red risk state, then approve execution so the timeline clearly shows simulated remediation.
+          </p>
+          <div class="aside-panel-footer">
+            The design stays dark, high-contrast, and intentionally restrained so the product still reads as a real operator tool rather than a hackathon mockup.
+          </div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="signal-strip" aria-label="Key product signals">
+      <article class="signal-card">
+        <div class="signal-card__kicker">Ground truth</div>
+        <h2 class="signal-card__title">Real SSL, HTTP, and DNS checks</h2>
+        <p class="signal-card__copy">Discovery is anchored in live network data so the downstream agent stages start from deterministic evidence.</p>
+      </article>
+      <article class="signal-card">
+        <div class="signal-card__kicker">Workflow</div>
+        <h2 class="signal-card__title">Clear multi-stage progression</h2>
+        <p class="signal-card__copy">The stage rail below turns the agent sequence into something judges can understand at a glance during a short demo.</p>
+      </article>
+      <article class="signal-card">
+        <div class="signal-card__kicker">Governance</div>
+        <h2 class="signal-card__title">Human gate before execution</h2>
+        <p class="signal-card__copy">Approval is intentionally prominent so the boundary between analysis and action is visible and trustworthy.</p>
+      </article>
+    </section>
+
+    <section class="pipeline-shell" aria-label="Pipeline progress">
+      <div class="pipeline-shell__header">
+        <div class="pipeline-shell__title">
+          <strong>Workflow Progress</strong>
+          <span>Discovery, reasoning, approval, and execution are surfaced as separate operator-visible states.</span>
+        </div>
+        <span class="tech-badge">Human-in-the-loop</span>
+      </div>
+      <div id="pipelineSteps" class="pipeline">
+        <div class="pipeline-step" data-step="discovery" data-state="inactive">
+          <span class="pipeline-dot">1</span>
+          <span class="pipeline-label">Discovery</span>
+        </div>
+        <div class="pipeline-step" data-step="risk" data-state="inactive">
+          <span class="pipeline-dot">2</span>
+          <span class="pipeline-label">Risk Assessment</span>
+        </div>
+        <div class="pipeline-step" data-step="diagnostics" data-state="inactive">
+          <span class="pipeline-dot">3</span>
+          <span class="pipeline-label">Diagnostics</span>
+        </div>
+        <div class="pipeline-step" data-step="plan" data-state="inactive">
+          <span class="pipeline-dot">4</span>
+          <span class="pipeline-label">Remediation Plan</span>
+        </div>
+        <div class="pipeline-step" data-step="approval" data-state="inactive">
+          <span class="pipeline-dot">5</span>
+          <span class="pipeline-label">Approval</span>
+        </div>
+        <div class="pipeline-step" data-step="execution" data-state="inactive">
+          <span class="pipeline-dot">6</span>
+          <span class="pipeline-label">Execution</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="guide-grid" aria-label="Context and operator guidance">
+      <article class="guide-card">
+        <div class="guide-kicker">Reading the output</div>
+        <h2 class="guide-title">Discovery is the evidence layer</h2>
+        <p class="guide-copy">Source and target snapshot summaries stay near the top so judges can see the real data before they read any LLM-generated reasoning.</p>
+        <div class="guide-stack">
+          <div class="guide-pill"><span>Health score ring</span><strong>Fast migration signal</strong></div>
+          <div class="guide-pill"><span>Finding rows</span><strong>Stable IDs + severities</strong></div>
+        </div>
+      </article>
+
+      <article class="guide-card">
+        <div class="guide-kicker">Decision support</div>
+        <h2 class="guide-title">Risk and diagnostics stay separate</h2>
+        <p class="guide-copy">Risk frames the decision, diagnostics explain the cause, and the remediation card turns that into concrete go-live actions without collapsing the stages together.</p>
+      </article>
+
+      <article class="guide-card">
+        <div class="guide-kicker">Execution boundary</div>
+        <h2 class="guide-title">Simulation remains explicit</h2>
+        <p class="guide-copy">The approval section and execution timeline are deliberately styled as a distinct governance zone so no one mistakes simulated actions for live infrastructure changes.</p>
+      </article>
+    </section>
+
+    <section id="resultsSection" class="results" hidden>
+      <div class="results-layout">
+        <div class="results-main">
+          <article id="errorCard" class="card error-card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Analysis Error</h2>
+                <p class="card-subtitle">The migration analysis could not be completed.</p>
+              </div>
+            </div>
+            <p id="errorText"></p>
+          </article>
+
+          <article id="discoveryCard" class="card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Discovery</h2>
+                <p class="card-subtitle">Live environment snapshots and deterministic comparison output.</p>
+              </div>
+              <span class="badge badge-complete">Completed</span>
+            </div>
+
+            <div class="snapshot-grid">
+              <div id="sourceSnapshotSummary" class="snapshot-card"></div>
+              <div id="targetSnapshotSummary" class="snapshot-card"></div>
+            </div>
+
+            <div class="discovery-summary">
+              <div class="health-panel">
+                <div id="healthRing" class="health-ring">
+                  <div class="health-ring__content">
+                    <div id="healthScoreValue" class="health-score">0</div>
+                    <div class="health-score-label">Health Score</div>
+                  </div>
+                </div>
+              </div>
+              <div class="summary-panel">
+                <div id="changesSummary" class="summary-headline">Waiting for comparison output.</div>
+                <div class="summary-copy">
+                  Findings below are produced from the structured snapshot diff, then handed to the reasoning agents as grounded migration evidence.
+                </div>
+                <div class="summary-metrics">
+                  <div class="summary-metric">
+                    <strong id="summaryTotalChanges">0</strong>
+                    <span>Total Changes</span>
+                  </div>
+                  <div class="summary-metric">
+                    <strong id="summaryCriticalChanges">0</strong>
+                    <span>Critical</span>
+                  </div>
+                  <div class="summary-metric">
+                    <strong id="summaryWarningChanges">0</strong>
+                    <span>Warnings</span>
+                  </div>
+                  <div class="summary-metric">
+                    <strong id="summaryHighChanges">0</strong>
+                    <span>High</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="findingChips" class="finding-list"></div>
+
+            <details class="raw-details">
+              <summary>View raw comparison report</summary>
+              <pre id="discoveryRaw"></pre>
+            </details>
+          </article>
+
+          <article id="riskCard" class="card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Risk Assessment</h2>
+                <p class="card-subtitle">Decision framing generated from the comparison report.</p>
+              </div>
+              <span id="riskBadge" class="badge badge-neutral">Pending</span>
+            </div>
+
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-card__label">Risk Level</div>
+                <div id="riskLevelValue" class="info-card__value">-</div>
+              </div>
+              <div class="info-card">
+                <div class="info-card__label">Blocking Issues</div>
+                <div id="blockingIssuesValue" class="info-card__value">-</div>
+              </div>
+              <div class="info-card">
+                <div class="info-card__label">Recommendation</div>
+                <div id="recommendationValue" class="info-card__value">-</div>
+              </div>
+            </div>
+
+            <div id="riskRecommendation" class="recommendation-banner low">
+              <strong>Recommendation</strong>
+              Awaiting risk assessment.
+            </div>
+
+            <details class="raw-details" style="margin-top: 18px;">
+              <summary>View full risk assessment</summary>
+              <pre id="riskReasoning"></pre>
+            </details>
+          </article>
+
+          <article id="diagnosticsCard" class="card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Diagnostics</h2>
+                <p class="card-subtitle">Root-cause analysis for the migration issues flagged above.</p>
+              </div>
+            </div>
+
+            <div id="diagnosticIssues" class="issue-list"></div>
+
+            <details class="raw-details" style="margin-top: 18px;">
+              <summary>View full diagnostics</summary>
+              <pre id="diagnosticsRaw"></pre>
+            </details>
+          </article>
+
+          <article id="planCard" class="card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Remediation Plan</h2>
+                <p class="card-subtitle">Prioritized steps before go-live and post-cutover monitoring guidance.</p>
+              </div>
+            </div>
+
+            <div class="section-label">Before Go-Live</div>
+            <div id="planBeforeList" class="step-list"></div>
+
+            <div class="section-label">Post Go-Live Monitoring</div>
+            <div id="planAfterList" class="monitor-list"></div>
+
+            <div id="planEta" class="eta-banner" style="margin-top: 18px;">
+              <strong>Estimated Time</strong>
+              Awaiting plan output.
+            </div>
+
+            <details class="raw-details" style="margin-top: 18px;">
+              <summary>View full remediation plan</summary>
+              <pre id="planRaw"></pre>
+            </details>
+          </article>
+
+          <article id="approvalCard" class="card approval-card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Human approval required before execution</h2>
+                <p class="card-subtitle">Simulated remediation will not run until a human explicitly approves the plan.</p>
+              </div>
+            </div>
+
+            <div class="approval-copy">
+              This is the governance checkpoint for the migration. Discovery and reasoning are complete, but the system will not advance into execution until you explicitly approve or reject the proposed remediation plan.
+            </div>
+
+            <div id="approvalNotice" hidden></div>
+
+            <div class="approval-actions">
+              <button id="approveButton" class="button-approve" disabled>Approve &amp; Execute</button>
+              <button id="rejectButton" class="button-reject" disabled>Reject</button>
+            </div>
+          </article>
+
+          <article id="executionCard" class="card" hidden>
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 class="card-title">Execution</h2>
+                <p class="card-subtitle">Simulated action timeline and post-action verification.</p>
+              </div>
+              <span class="badge badge-simulated">Simulated</span>
+            </div>
+
+            <div id="executionTimeline" class="timeline"></div>
+
+            <div class="section-label">Verification</div>
+            <div id="executionVerification" class="verification-list"></div>
+
+            <div id="executionFinalStatus" class="final-status" style="margin-top: 18px;">
+              <strong>Final Status</strong>
+              Awaiting execution results.
+            </div>
+
+            <details class="raw-details" style="margin-top: 18px;">
+              <summary>View full execution output</summary>
+              <pre id="executionRaw"></pre>
+            </details>
+          </article>
+        </div>
+
+        <aside class="results-rail">
+          <article class="rail-card">
+            <h2 class="rail-card__title">Current Session</h2>
+            <p class="rail-card__copy">A compact operational summary that updates as the analysis moves from discovery to approval and execution.</p>
+            <div class="rail-stat-list">
+              <div class="rail-stat">
+                <span>Discovery mode</span>
+                <strong id="sessionModeValue">Direct</strong>
+              </div>
+              <div class="rail-stat">
+                <span>Current risk</span>
+                <strong id="sessionRiskValue">Waiting</strong>
+              </div>
+              <div class="rail-stat">
+                <span>Health score</span>
+                <strong id="sessionHealthValue">0</strong>
+              </div>
+              <div class="rail-stat">
+                <span>Approval state</span>
+                <strong id="sessionApprovalValue">Pending</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="rail-card">
+            <h2 class="rail-card__title">Operator Notes</h2>
+            <p class="rail-card__copy">This side panel is intentionally short so it helps the demo without competing with the real results.</p>
+            <div class="rail-checklist">
+              <div class="rail-checklist-item">Lead with the discovery card first. It proves the system is grounded in real infrastructure checks.</div>
+              <div class="rail-checklist-item">The red recommendation banner is the fastest way to communicate migration risk in a screenshot or short demo clip.</div>
+              <div class="rail-checklist-item">Execution should read as safe and explicit. Simulated actions and real verification are intentionally separated.</div>
+            </div>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>Built with Microsoft Agent Framework &amp; Azure OpenAI</div>
+      <div>MigrationOps Copilot — Microsoft AI Dev Days Hackathon 2026</div>
+    </footer>
+  </main>
 
   <script>
     const sourceUrlInput = document.getElementById("sourceUrl");
@@ -429,73 +2601,988 @@
     const rejectButton = document.getElementById("rejectButton");
     const statusBar = document.getElementById("statusBar");
 
-    const discoveryStep = document.getElementById("discoveryStep");
-    const riskStep = document.getElementById("riskStep");
-    const diagnosticsStep = document.getElementById("diagnosticsStep");
-    const plannerStep = document.getElementById("plannerStep");
-    const approvalStep = document.getElementById("approvalStep");
-    const executionStep = document.getElementById("executionStep");
+    const resultsSection = document.getElementById("resultsSection");
+    const errorCard = document.getElementById("errorCard");
+    const errorText = document.getElementById("errorText");
+    const discoveryCard = document.getElementById("discoveryCard");
+    const riskCard = document.getElementById("riskCard");
+    const diagnosticsCard = document.getElementById("diagnosticsCard");
+    const planCard = document.getElementById("planCard");
+    const approvalCard = document.getElementById("approvalCard");
+    const executionCard = document.getElementById("executionCard");
+
+    const sourceSnapshotSummary = document.getElementById("sourceSnapshotSummary");
+    const targetSnapshotSummary = document.getElementById("targetSnapshotSummary");
+    const healthRing = document.getElementById("healthRing");
+    const healthScoreValue = document.getElementById("healthScoreValue");
+    const summaryTotalChanges = document.getElementById("summaryTotalChanges");
+    const summaryCriticalChanges = document.getElementById("summaryCriticalChanges");
+    const summaryWarningChanges = document.getElementById("summaryWarningChanges");
+    const summaryHighChanges = document.getElementById("summaryHighChanges");
+    const changesSummary = document.getElementById("changesSummary");
+    const findingChips = document.getElementById("findingChips");
+    const discoveryRaw = document.getElementById("discoveryRaw");
 
     const riskBadge = document.getElementById("riskBadge");
-    const healthScore = document.getElementById("healthScore");
-    const totalChanges = document.getElementById("totalChanges");
-    const criticalChanges = document.getElementById("criticalChanges");
-    const findingList = document.getElementById("findingList");
-    const discoveryOutput = document.getElementById("discoveryOutput");
-    const riskOutput = document.getElementById("riskOutput");
-    const diagnosticsOutput = document.getElementById("diagnosticsOutput");
-    const plannerOutput = document.getElementById("plannerOutput");
-    const executionOutput = document.getElementById("executionOutput");
+    const riskLevelValue = document.getElementById("riskLevelValue");
+    const blockingIssuesValue = document.getElementById("blockingIssuesValue");
+    const recommendationValue = document.getElementById("recommendationValue");
+    const riskRecommendation = document.getElementById("riskRecommendation");
+    const riskReasoning = document.getElementById("riskReasoning");
+
+    const diagnosticIssues = document.getElementById("diagnosticIssues");
+    const diagnosticsRaw = document.getElementById("diagnosticsRaw");
+
+    const planBeforeList = document.getElementById("planBeforeList");
+    const planAfterList = document.getElementById("planAfterList");
+    const planEta = document.getElementById("planEta");
+    const planRaw = document.getElementById("planRaw");
+
+    const approvalNotice = document.getElementById("approvalNotice");
+
+    const executionTimeline = document.getElementById("executionTimeline");
+    const executionVerification = document.getElementById("executionVerification");
+    const executionFinalStatus = document.getElementById("executionFinalStatus");
+    const executionRaw = document.getElementById("executionRaw");
+
+    const sessionModeValue = document.getElementById("sessionModeValue");
+    const sessionRiskValue = document.getElementById("sessionRiskValue");
+    const sessionHealthValue = document.getElementById("sessionHealthValue");
+    const sessionApprovalValue = document.getElementById("sessionApprovalValue");
+
+    const pipelineOrder = ["discovery", "risk", "diagnostics", "plan", "approval", "execution"];
+    const pipelineLabels = {
+      discovery: "1",
+      risk: "2",
+      diagnostics: "3",
+      plan: "4",
+      approval: "5",
+      execution: "6"
+    };
+    const pipelineSymbols = {
+      inactive: null,
+      active: null,
+      complete: "✓",
+      blocked: "×"
+    };
+
+    const pipelineSteps = Object.fromEntries(
+      Array.from(document.querySelectorAll(".pipeline-step")).map((element) => [element.dataset.step, element])
+    );
 
     let currentAnalysisId = null;
 
-    function resetSteps() {
-      for (const step of [discoveryStep, riskStep, diagnosticsStep, plannerStep, approvalStep, executionStep]) {
-        step.classList.remove("visible");
-      }
-      executionOutput.textContent = "";
-      currentAnalysisId = null;
+    function setButtonLoading(button, isLoading, text, loadingText) {
+      button.disabled = isLoading;
+      button.textContent = isLoading ? loadingText : text;
     }
 
     function setStatus(message, spinning = false) {
-      statusBar.innerHTML = spinning ? `<span class="spinner">${message}</span>` : message;
+      if (!message) {
+        statusBar.textContent = "";
+        return;
+      }
+      statusBar.innerHTML = spinning ? `<span class="spinner">${message}</span>` : "";
+      if (!spinning) {
+        statusBar.textContent = message;
+      }
     }
 
-    function showStep(step) {
-      step.classList.add("visible");
+    function showCard(cardElement) {
+      cardElement.hidden = false;
+      requestAnimationFrame(() => {
+        cardElement.classList.add("is-visible");
+      });
     }
 
-    function setRiskBadge(risk) {
-      riskBadge.textContent = risk;
-      riskBadge.className = "badge " + risk.toLowerCase();
+    function hideCard(cardElement) {
+      cardElement.classList.remove("is-visible");
+      cardElement.hidden = true;
     }
 
-    function renderFindings(changes) {
-      findingList.innerHTML = "";
-      if (!changes.length) {
-        const item = document.createElement("li");
-        item.textContent = "No migration-breaking changes detected.";
-        findingList.appendChild(item);
+    function setPipelineStep(stepName, state) {
+      const step = pipelineSteps[stepName];
+      if (!step) {
+        return;
+      }
+      step.dataset.state = state;
+      const dot = step.querySelector(".pipeline-dot");
+      dot.textContent = pipelineSymbols[state] || pipelineLabels[stepName];
+    }
+
+    function setAllPipelineInactive() {
+      for (const stepName of pipelineOrder) {
+        setPipelineStep(stepName, "inactive");
+      }
+    }
+
+    function setFlowState(state) {
+      document.body.dataset.flowState = state;
+    }
+
+    function scoreColor(score) {
+      if (score >= 80) {
+        return getComputedStyle(document.documentElement).getPropertyValue("--risk-low").trim();
+      }
+      if (score >= 50) {
+        return getComputedStyle(document.documentElement).getPropertyValue("--risk-medium").trim();
+      }
+      return getComputedStyle(document.documentElement).getPropertyValue("--risk-critical").trim();
+    }
+
+    function setHealthRing(score) {
+      const boundedScore = Math.max(0, Math.min(100, Number(score) || 0));
+      const color = scoreColor(boundedScore);
+      const degrees = (boundedScore / 100) * 360;
+      healthRing.style.background = `conic-gradient(${color} 0deg ${degrees}deg, var(--ring-track) ${degrees}deg 360deg)`;
+      healthScoreValue.textContent = String(boundedScore);
+      healthScoreValue.style.color = color;
+    }
+
+    function escapePattern(text) {
+      return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function extractField(block, label, nextLabels) {
+      const boundary = nextLabels.map(escapePattern).join("|");
+      const pattern = new RegExp(`${escapePattern(label)}:\\s*([\\s\\S]*?)(?=\\n(?:${boundary}):|$)`, "i");
+      const match = block.match(pattern);
+      return match ? match[1].trim() : "";
+    }
+
+    function extractJsonBlock(report, marker) {
+      const markerIndex = report.indexOf(marker);
+      if (markerIndex === -1) {
+        return null;
+      }
+
+      const startIndex = report.indexOf("{", markerIndex);
+      if (startIndex === -1) {
+        return null;
+      }
+
+      let depth = 0;
+      for (let index = startIndex; index < report.length; index += 1) {
+        const character = report[index];
+        if (character === "{") {
+          depth += 1;
+        } else if (character === "}") {
+          depth -= 1;
+          if (depth === 0) {
+            return report.slice(startIndex, index + 1);
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function parseDiscoverySnapshots(report) {
+      try {
+        const beforeRaw = extractJsonBlock(report, "Pre-Migration Snapshot:");
+        const afterRaw = extractJsonBlock(report, "Post-Migration Snapshot:");
+        return {
+          source: beforeRaw ? JSON.parse(beforeRaw) : null,
+          target: afterRaw ? JSON.parse(afterRaw) : null
+        };
+      } catch {
+        return { source: null, target: null };
+      }
+    }
+
+    function createEmptyState(message) {
+      const state = document.createElement("div");
+      state.className = "empty-state";
+      state.textContent = message;
+      return state;
+    }
+
+    function parseHostname(value) {
+      try {
+        return new URL(value).hostname;
+      } catch {
+        return value || "Unavailable";
+      }
+    }
+
+    function makeStatusInfo(label, tone, value, detail) {
+      return { label, tone, value, detail };
+    }
+
+    function formatSslStatus(ssl = {}) {
+      if (ssl.status === "error") {
+        return makeStatusInfo("SSL", "error", "Check Failed", ssl.error || "Certificate retrieval failed.");
+      }
+      if (ssl.is_expired === true) {
+        return makeStatusInfo("SSL", "error", "Expired", ssl.common_name || ssl.issuer || "Certificate expired.");
+      }
+      if (ssl.is_expiring_soon === true) {
+        const detail = typeof ssl.days_until_expiry === "number"
+          ? `${ssl.days_until_expiry} days remaining`
+          : (ssl.common_name || "Certificate renewal recommended soon.");
+        return makeStatusInfo("SSL", "warning", "Expiring Soon", detail);
+      }
+      return makeStatusInfo(
+        "SSL",
+        "good",
+        "Healthy",
+        ssl.issuer || ssl.common_name || "TLS handshake succeeded."
+      );
+    }
+
+    function formatHttpStatus(http = {}) {
+      if (http.status === "error") {
+        return makeStatusInfo("HTTP", "error", "Request Failed", http.error || "HTTP request failed.");
+      }
+
+      const code = typeof http.status_code === "number" ? http.status_code : null;
+      const responseTime = typeof http.response_time_ms === "number"
+        ? `${Math.round(http.response_time_ms)} ms`
+        : "Response time unavailable";
+
+      if (code !== null && code >= 500) {
+        return makeStatusInfo("HTTP", "error", `${code}`, responseTime);
+      }
+      if (code !== null && code >= 400) {
+        return makeStatusInfo("HTTP", "warning", `${code}`, responseTime);
+      }
+      if (code !== null && code >= 200 && code < 300) {
+        return makeStatusInfo("HTTP", "good", `${code} OK`, responseTime);
+      }
+
+      return makeStatusInfo("HTTP", "warning", "Unknown", responseTime);
+    }
+
+    function formatDnsStatus(dns = {}) {
+      if (dns.status === "error") {
+        return makeStatusInfo("DNS", "error", "Resolution Failed", dns.error || "DNS lookup failed.");
+      }
+
+      const resolvedIps = Array.isArray(dns.resolved_ips) ? dns.resolved_ips : [];
+      const detail = resolvedIps.length
+        ? resolvedIps.slice(0, 2).join(", ")
+        : "No IP addresses returned.";
+      const label = resolvedIps.length ? `${resolvedIps.length} IP${resolvedIps.length > 1 ? "s" : ""}` : "Resolved";
+      return makeStatusInfo("DNS", "good", label, detail);
+    }
+
+    function createSnapshotStatusRow(info) {
+      const row = document.createElement("div");
+      row.className = "snapshot-status";
+
+      const dot = document.createElement("span");
+      dot.className = `status-dot ${info.tone}`;
+
+      const body = document.createElement("div");
+
+      const label = document.createElement("div");
+      label.className = "status-label";
+      label.textContent = info.label;
+
+      const detail = document.createElement("div");
+      detail.className = "status-detail";
+      detail.textContent = info.detail || "No detail available.";
+
+      body.appendChild(label);
+      body.appendChild(detail);
+
+      const value = document.createElement("div");
+      value.className = "status-value";
+      value.textContent = info.value;
+
+      row.appendChild(dot);
+      row.appendChild(body);
+      row.appendChild(value);
+      return row;
+    }
+
+    function renderSnapshotSummary(container, heading, snapshot) {
+      container.innerHTML = "";
+
+      if (!snapshot) {
+        container.appendChild(createEmptyState(`${heading} snapshot data could not be parsed from the discovery report.`));
+        return;
+      }
+
+      const header = document.createElement("div");
+      header.className = "snapshot-card__header";
+
+      const title = document.createElement("div");
+      title.className = "snapshot-card__title";
+
+      const label = document.createElement("div");
+      label.className = "snapshot-card__label";
+      label.textContent = heading;
+
+      const host = document.createElement("div");
+      host.className = "snapshot-card__host";
+      host.textContent = parseHostname(snapshot.url || snapshot.hostname || "");
+
+      title.appendChild(label);
+      title.appendChild(host);
+
+      header.appendChild(title);
+      container.appendChild(header);
+
+      const list = document.createElement("div");
+      list.className = "snapshot-status-list";
+      list.appendChild(createSnapshotStatusRow(formatSslStatus(snapshot.ssl || {})));
+      list.appendChild(createSnapshotStatusRow(formatHttpStatus(snapshot.http || {})));
+      list.appendChild(createSnapshotStatusRow(formatDnsStatus(snapshot.dns || {})));
+      container.appendChild(list);
+    }
+
+    function severityClass(severity) {
+      const normalized = String(severity || "").toLowerCase();
+      if (normalized === "critical") {
+        return "badge-critical";
+      }
+      if (normalized === "high") {
+        return "badge-high";
+      }
+      if (normalized === "warning") {
+        return "badge-medium";
+      }
+      if (normalized === "info") {
+        return "badge-low";
+      }
+      return "badge-neutral";
+    }
+
+    function renderFindings(changes = []) {
+      findingChips.innerHTML = "";
+
+      if (!Array.isArray(changes) || changes.length === 0) {
+        findingChips.appendChild(createEmptyState("No migration-breaking changes detected between the source and target environments."));
         return;
       }
 
       for (const change of changes) {
-        const item = document.createElement("li");
-        item.textContent = `${change.id}: ${change.description}`;
-        findingList.appendChild(item);
+        const row = document.createElement("div");
+        row.className = "finding-row";
+
+        const badge = document.createElement("span");
+        badge.className = `badge ${severityClass(change.severity)}`;
+        badge.textContent = String(change.severity || "info");
+
+        const identifier = document.createElement("span");
+        identifier.className = "finding-id";
+        identifier.textContent = String(change.id || "finding");
+
+        const description = document.createElement("div");
+        description.className = "finding-description";
+        description.textContent = String(change.description || "No description provided.");
+
+        row.appendChild(badge);
+        row.appendChild(identifier);
+        row.appendChild(description);
+        findingChips.appendChild(row);
       }
+    }
+
+    function extractRiskLevel(text) {
+      const match = String(text || "").match(/\b(CRITICAL|HIGH|MEDIUM|LOW)\b/i);
+      return match ? match[1].toUpperCase() : "LOW";
+    }
+
+    function extractRecommendation(text) {
+      const match = String(text || "").match(/Recommendation:\s*(PROCEED WITH CAUTION|BLOCK MIGRATION|PROCEED)/i);
+      return match ? match[1].toUpperCase() : "REVIEW REQUIRED";
+    }
+
+    function extractBlockingIssues(text) {
+      const match = String(text || "").match(/Blocking Issues:\s*(\d+)/i);
+      return match ? match[1] : "0";
+    }
+
+    function applyRiskBadge(target, riskLevel) {
+      target.className = "badge";
+      if (riskLevel === "CRITICAL") {
+        target.classList.add("badge-critical");
+      } else if (riskLevel === "HIGH") {
+        target.classList.add("badge-high");
+      } else if (riskLevel === "MEDIUM") {
+        target.classList.add("badge-medium");
+      } else if (riskLevel === "LOW") {
+        target.classList.add("badge-low");
+      } else {
+        target.classList.add("badge-neutral");
+      }
+      target.textContent = riskLevel;
+    }
+
+    function setRecommendationBanner(element, recommendation, riskLevel) {
+      element.className = "recommendation-banner";
+      if (recommendation.includes("BLOCK")) {
+        element.classList.add("critical");
+      } else if (recommendation.includes("CAUTION") || riskLevel === "HIGH" || riskLevel === "MEDIUM") {
+        element.classList.add("medium");
+      } else {
+        element.classList.add("low");
+      }
+      element.innerHTML = "";
+      const strong = document.createElement("strong");
+      strong.textContent = "Recommendation";
+      const text = document.createElement("div");
+      text.textContent = recommendation;
+      element.appendChild(strong);
+      element.appendChild(text);
+    }
+
+    function parseDiagnostics(text) {
+      const normalized = String(text || "").replace(/\r\n/g, "\n").trim();
+      const blocks = normalized
+        .split(/\n(?=Issue:\s*)/g)
+        .map((block) => block.trim())
+        .filter((block) => block.startsWith("Issue:"));
+
+      return blocks.map((block) => ({
+        issue: extractField(block, "Issue", ["Issue", "Root Cause", "Category", "Evidence", "Urgency"]),
+        rootCause: extractField(block, "Root Cause", ["Issue", "Root Cause", "Category", "Evidence", "Urgency"]),
+        category: extractField(block, "Category", ["Issue", "Root Cause", "Category", "Evidence", "Urgency"]),
+        evidence: extractField(block, "Evidence", ["Issue", "Root Cause", "Category", "Evidence", "Urgency"]),
+        urgency: extractField(block, "Urgency", ["Issue", "Root Cause", "Category", "Evidence", "Urgency"])
+      })).filter((item) => item.issue || item.rootCause);
+    }
+
+    function urgencyBadgeClass(urgency) {
+      const normalized = String(urgency || "").toLowerCase();
+      if (normalized.includes("immediate")) {
+        return "badge-critical";
+      }
+      if (normalized.includes("wait")) {
+        return "badge-medium";
+      }
+      if (normalized.includes("informational")) {
+        return "badge-neutral";
+      }
+      return "badge-neutral";
+    }
+
+    function renderDiagnostics(items) {
+      diagnosticIssues.innerHTML = "";
+
+      if (!items.length) {
+        diagnosticIssues.appendChild(createEmptyState("Diagnostics output could not be fully structured. Expand the raw diagnostics section for the full agent response."));
+        return;
+      }
+
+      for (const item of items) {
+        const card = document.createElement("div");
+        card.className = "issue-card";
+
+        const header = document.createElement("div");
+        header.className = "issue-header";
+
+        const title = document.createElement("div");
+        title.className = "issue-title";
+        title.textContent = item.issue || "Migration issue";
+
+        const meta = document.createElement("div");
+        meta.className = "issue-meta";
+
+        if (item.category) {
+          const category = document.createElement("span");
+          category.className = "badge badge-neutral";
+          category.textContent = item.category;
+          meta.appendChild(category);
+        }
+
+        if (item.urgency) {
+          const urgency = document.createElement("span");
+          urgency.className = `badge ${urgencyBadgeClass(item.urgency)}`;
+          urgency.textContent = item.urgency;
+          meta.appendChild(urgency);
+        }
+
+        header.appendChild(title);
+        header.appendChild(meta);
+
+        const copy = document.createElement("div");
+        copy.className = "issue-copy";
+        copy.textContent = item.rootCause || "No root cause summary available.";
+
+        const evidence = document.createElement("div");
+        evidence.className = "issue-copy";
+        evidence.style.marginTop = "6px";
+        evidence.textContent = item.evidence ? `Evidence: ${item.evidence}` : "Evidence not explicitly provided.";
+
+        card.appendChild(header);
+        card.appendChild(copy);
+        card.appendChild(evidence);
+        diagnosticIssues.appendChild(card);
+      }
+    }
+
+    function extractSection(text, startMarker, endMarker) {
+      const startIndex = text.indexOf(startMarker);
+      if (startIndex === -1) {
+        return "";
+      }
+
+      const fromStart = text.slice(startIndex + startMarker.length);
+      if (!endMarker) {
+        return fromStart.trim();
+      }
+
+      const endIndex = fromStart.indexOf(endMarker);
+      if (endIndex === -1) {
+        return fromStart.trim();
+      }
+
+      return fromStart.slice(0, endIndex).trim();
+    }
+
+    function parseNumberedLines(sectionText) {
+      return String(sectionText || "")
+        .split(/\n/)
+        .map((line) => line.trim())
+        .filter((line) => /^\d+\.\s+/.test(line));
+    }
+
+    function parsePlanner(text) {
+      const normalized = String(text || "").replace(/\r\n/g, "\n");
+      const beforeSection = extractSection(normalized, "BEFORE GO-LIVE:", "POST GO-LIVE MONITORING:");
+      const afterSection = extractSection(normalized, "POST GO-LIVE MONITORING:", "ESTIMATED TIME TO MIGRATION-READY:");
+      const estimatedTime = extractSection(normalized, "ESTIMATED TIME TO MIGRATION-READY:", "---") || extractSection(normalized, "ESTIMATED TIME TO MIGRATION-READY:", "");
+
+      const beforeGoLive = parseNumberedLines(beforeSection).map((line) => {
+        const trimmed = line.replace(/^\d+\.\s+/, "");
+        const parts = trimmed.split(/\s+[—-]\s+/);
+        return {
+          description: parts[0] || trimmed,
+          executionType: parts[1] || "Manual",
+          timeEstimate: parts[2] || "Estimate unavailable",
+          blocking: parts[3] || "BLOCKING"
+        };
+      });
+
+      const postGoLive = parseNumberedLines(afterSection).map((line) => {
+        const trimmed = line.replace(/^\d+\.\s+/, "");
+        const parts = trimmed.split(/\s+[—-]\s+/);
+        return {
+          description: parts[0] || trimmed,
+          duration: parts[1] || "",
+          detail: parts[2] || ""
+        };
+      });
+
+      return { beforeGoLive, postGoLive, estimatedTime: estimatedTime || "Estimate unavailable" };
+    }
+
+    function renderPlanSteps(steps) {
+      planBeforeList.innerHTML = "";
+
+      if (!steps.length) {
+        planBeforeList.appendChild(createEmptyState("No structured before-go-live steps were extracted from the planner output."));
+        return;
+      }
+
+      steps.forEach((step, index) => {
+        const row = document.createElement("div");
+        row.className = "plan-step";
+
+        const number = document.createElement("span");
+        number.className = "step-number";
+        number.textContent = String(index + 1);
+
+        const content = document.createElement("div");
+
+        const header = document.createElement("div");
+        header.className = "plan-step__header";
+
+        const title = document.createElement("div");
+        title.className = "plan-step__title";
+        title.textContent = step.description;
+
+        const meta = document.createElement("div");
+        meta.className = "plan-step__meta";
+
+        const typeBadge = document.createElement("span");
+        typeBadge.className = `badge ${String(step.executionType).toLowerCase().includes("auto") ? "badge-low" : "badge-neutral"}`;
+        typeBadge.textContent = step.executionType;
+
+        const blockingBadge = document.createElement("span");
+        blockingBadge.className = `badge ${String(step.blocking).toUpperCase().includes("NON") ? "badge-non-blocking" : "badge-blocking"}`;
+        blockingBadge.textContent = step.blocking;
+
+        meta.appendChild(typeBadge);
+        meta.appendChild(blockingBadge);
+
+        header.appendChild(title);
+        header.appendChild(meta);
+
+        const detail = document.createElement("div");
+        detail.className = "plan-step__detail";
+        detail.textContent = `Estimated effort: ${step.timeEstimate}`;
+
+        content.appendChild(header);
+        content.appendChild(detail);
+        row.appendChild(number);
+        row.appendChild(content);
+        planBeforeList.appendChild(row);
+      });
+    }
+
+    function renderMonitoringItems(items) {
+      planAfterList.innerHTML = "";
+
+      if (!items.length) {
+        planAfterList.appendChild(createEmptyState("No structured post-go-live monitoring items were extracted from the planner output."));
+        return;
+      }
+
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "monitor-item";
+
+        const title = document.createElement("div");
+        title.className = "plan-step__title";
+        title.textContent = item.description;
+
+        const detailParts = [item.duration, item.detail].filter(Boolean);
+        const detail = document.createElement("div");
+        detail.className = "plan-step__detail";
+        detail.textContent = detailParts.length ? detailParts.join(" — ") : "Continue monitoring after go-live.";
+
+        row.appendChild(title);
+        row.appendChild(detail);
+        planAfterList.appendChild(row);
+      });
+    }
+
+    function parseExecutor(text) {
+      const normalized = String(text || "").replace(/\r\n/g, "\n");
+      const executionLogSection = extractSection(normalized, "Execution Log:", "Verification:");
+      const verificationSection = extractSection(normalized, "Verification:", "Final Status:");
+      const finalStatus = extractSection(normalized, "Final Status:", "") || normalized.trim();
+
+      const log = executionLogSection
+        .split(/\n/)
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => line.replace(/^-\s*/, ""));
+
+      const verification = verificationSection
+        .split(/\n/)
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => line.replace(/^-\s*/, ""));
+
+      return { log, verification, finalStatus };
+    }
+
+    function currentTimestamp() {
+      return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function renderExecution(parsed) {
+      executionTimeline.innerHTML = "";
+      executionVerification.innerHTML = "";
+
+      if (!parsed.log.length) {
+        executionTimeline.appendChild(createEmptyState("No structured execution timeline could be extracted from the executor output."));
+      } else {
+        parsed.log.forEach((entry) => {
+          const item = document.createElement("div");
+          item.className = "timeline-item";
+
+          const header = document.createElement("div");
+          header.className = "timeline-item__header";
+
+          const title = document.createElement("div");
+          title.className = "plan-step__title";
+          title.textContent = entry;
+
+          const meta = document.createElement("div");
+          meta.className = "issue-meta";
+
+          const simulatedBadge = document.createElement("span");
+          simulatedBadge.className = "badge badge-simulated";
+          simulatedBadge.textContent = "Simulated";
+
+          const time = document.createElement("span");
+          time.className = "timeline-item__time";
+          time.textContent = currentTimestamp();
+
+          meta.appendChild(simulatedBadge);
+          meta.appendChild(time);
+          header.appendChild(title);
+          header.appendChild(meta);
+
+          item.appendChild(header);
+          executionTimeline.appendChild(item);
+        });
+      }
+
+      if (!parsed.verification.length) {
+        executionVerification.appendChild(createEmptyState("No post-execution verification lines were extracted from the executor output."));
+      } else {
+        parsed.verification.forEach((entry) => {
+          const item = document.createElement("div");
+          item.className = "verification-item";
+          item.textContent = entry;
+          executionVerification.appendChild(item);
+        });
+      }
+
+      const finalText = parsed.finalStatus || "Execution completed without a final status summary.";
+      const isFailure = /fail|error|block/i.test(finalText);
+      executionFinalStatus.className = `final-status ${isFailure ? "error" : "success"}`;
+      executionFinalStatus.innerHTML = "";
+
+      const heading = document.createElement("strong");
+      heading.textContent = "Final Status";
+      const body = document.createElement("div");
+      body.textContent = finalText;
+      executionFinalStatus.appendChild(heading);
+      executionFinalStatus.appendChild(body);
+    }
+
+    function showError(message) {
+      resultsSection.hidden = false;
+      errorText.textContent = message;
+      showCard(errorCard);
+    }
+
+    function clearError() {
+      errorCard.hidden = true;
+      errorCard.classList.remove("is-visible");
+      errorText.textContent = "";
+    }
+
+    function setApprovalNotice(type, message) {
+      approvalNotice.hidden = false;
+      approvalNotice.className = type === "error" ? "approval-banner error" : "approval-banner success";
+      approvalNotice.innerHTML = "";
+      const heading = document.createElement("strong");
+      heading.textContent = type === "error" ? "Execution Rejected" : "Execution Approved";
+      const body = document.createElement("div");
+      body.textContent = message;
+      approvalNotice.appendChild(heading);
+      approvalNotice.appendChild(body);
+    }
+
+    function clearApprovalNotice() {
+      approvalNotice.hidden = true;
+      approvalNotice.className = "";
+      approvalNotice.textContent = "";
+    }
+
+    function resetInputValidation() {
+      document.querySelectorAll(".input-shell").forEach((element) => {
+        element.classList.remove("is-invalid");
+      });
+    }
+
+    function markFieldInvalid(input) {
+      const shell = input.closest(".input-shell");
+      if (!shell) {
+        return;
+      }
+      shell.classList.remove("is-invalid");
+      void shell.offsetWidth;
+      shell.classList.add("is-invalid");
+    }
+
+    function validateInputs() {
+      resetInputValidation();
+      const sourceValue = sourceUrlInput.value.trim();
+      const targetValue = targetUrlInput.value.trim();
+      let isValid = true;
+
+      if (!sourceValue) {
+        isValid = false;
+        markFieldInvalid(sourceUrlInput);
+      }
+
+      if (!targetValue) {
+        isValid = false;
+        markFieldInvalid(targetUrlInput);
+      }
+
+      if (!isValid) {
+        return false;
+      }
+
+      try {
+        new URL(sourceValue);
+      } catch {
+        isValid = false;
+        markFieldInvalid(sourceUrlInput);
+      }
+
+      try {
+        new URL(targetValue);
+      } catch {
+        isValid = false;
+        markFieldInvalid(targetUrlInput);
+      }
+
+      return isValid;
+    }
+
+    function resetCards() {
+      [discoveryCard, riskCard, diagnosticsCard, planCard, approvalCard, executionCard].forEach((card) => {
+        card.hidden = true;
+        card.classList.remove("is-visible");
+      });
+    }
+
+    function resetDynamicContent() {
+      sourceSnapshotSummary.innerHTML = "";
+      targetSnapshotSummary.innerHTML = "";
+      findingChips.innerHTML = "";
+      diagnosticIssues.innerHTML = "";
+      planBeforeList.innerHTML = "";
+      planAfterList.innerHTML = "";
+      executionTimeline.innerHTML = "";
+      executionVerification.innerHTML = "";
+
+      discoveryRaw.textContent = "";
+      riskReasoning.textContent = "";
+      diagnosticsRaw.textContent = "";
+      planRaw.textContent = "";
+      executionRaw.textContent = "";
+
+      summaryTotalChanges.textContent = "0";
+      summaryCriticalChanges.textContent = "0";
+      summaryWarningChanges.textContent = "0";
+      summaryHighChanges.textContent = "0";
+      changesSummary.textContent = "Waiting for comparison output.";
+      healthScoreValue.textContent = "0";
+      setHealthRing(0);
+      sessionRiskValue.textContent = "Waiting";
+      sessionHealthValue.textContent = "0";
+      sessionApprovalValue.textContent = "Pending";
+
+      applyRiskBadge(riskBadge, "Pending");
+      riskLevelValue.textContent = "-";
+      blockingIssuesValue.textContent = "-";
+      recommendationValue.textContent = "-";
+
+      setRecommendationBanner(riskRecommendation, "Awaiting risk assessment.", "LOW");
+      planEta.className = "eta-banner";
+      planEta.innerHTML = "";
+      const heading = document.createElement("strong");
+      heading.textContent = "Estimated Time";
+      const body = document.createElement("div");
+      body.textContent = "Awaiting plan output.";
+      planEta.appendChild(heading);
+      planEta.appendChild(body);
+
+      executionFinalStatus.className = "final-status";
+      executionFinalStatus.innerHTML = "";
+      const finalHeading = document.createElement("strong");
+      finalHeading.textContent = "Final Status";
+      const finalBody = document.createElement("div");
+      finalBody.textContent = "Awaiting execution results.";
+      executionFinalStatus.appendChild(finalHeading);
+      executionFinalStatus.appendChild(finalBody);
+    }
+
+    function resetUI() {
+      setFlowState("idle");
+      currentAnalysisId = null;
+      resultsSection.hidden = true;
+      clearError();
+      clearApprovalNotice();
+      resetCards();
+      resetDynamicContent();
+      setAllPipelineInactive();
+      setStatus("");
+      approveButton.disabled = true;
+      rejectButton.disabled = true;
+      sessionModeValue.textContent = useMcpInput.checked ? "MCP" : "Direct";
+    }
+
+    function renderDiscovery(data) {
+      const snapshots = parseDiscoverySnapshots(data.comparison_report || "");
+      renderSnapshotSummary(sourceSnapshotSummary, "Source", snapshots.source);
+      renderSnapshotSummary(targetSnapshotSummary, "Target", snapshots.target);
+
+      const summary = data.summary || {};
+      const healthScore = Number(data.health_score ?? summary.migration_health_score ?? 0);
+      const total = Number(summary.total_changes || 0);
+      const critical = Number(summary.critical_changes || 0);
+      const high = Number(summary.high_changes || 0);
+      const warning = Number(summary.warning_changes || 0);
+
+      setHealthRing(healthScore);
+      sessionHealthValue.textContent = String(healthScore);
+      summaryTotalChanges.textContent = String(total);
+      summaryCriticalChanges.textContent = String(critical);
+      summaryWarningChanges.textContent = String(warning);
+      summaryHighChanges.textContent = String(high);
+      changesSummary.textContent = `${total} change${total === 1 ? "" : "s"} detected — ${critical} critical, ${warning} warning${warning === 1 ? "" : "s"}, ${high} high.`;
+
+      renderFindings(data.changes || []);
+      discoveryRaw.textContent = data.comparison_report || "";
+    }
+
+    function renderRiskCard(data) {
+      const riskLevel = extractRiskLevel(data.risk_assessor) || String(data.discovery.risk_level || "LOW");
+      const recommendation = extractRecommendation(data.risk_assessor);
+      const blockingIssues = extractBlockingIssues(data.risk_assessor);
+
+      sessionRiskValue.textContent = riskLevel;
+      applyRiskBadge(riskBadge, riskLevel);
+      riskLevelValue.textContent = riskLevel;
+      blockingIssuesValue.textContent = blockingIssues;
+      recommendationValue.textContent = recommendation;
+      setRecommendationBanner(riskRecommendation, recommendation, riskLevel);
+      riskReasoning.textContent = data.risk_assessor || "";
+    }
+
+    function renderDiagnosticsCard(text) {
+      const diagnostics = parseDiagnostics(text);
+      renderDiagnostics(diagnostics);
+      diagnosticsRaw.textContent = text || "";
+    }
+
+    function renderPlanCard(text) {
+      const plan = parsePlanner(text);
+      renderPlanSteps(plan.beforeGoLive);
+      renderMonitoringItems(plan.postGoLive);
+      planRaw.textContent = text || "";
+      planEta.innerHTML = "";
+      const heading = document.createElement("strong");
+      heading.textContent = "Estimated Time to Migration-Ready";
+      const body = document.createElement("div");
+      body.textContent = plan.estimatedTime || "Estimate unavailable";
+      planEta.appendChild(heading);
+      planEta.appendChild(body);
     }
 
     async function delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    analyzeButton.addEventListener("click", async () => {
-      resetSteps();
-      setStatus("Running discovery and agent analysis...", true);
-      analyzeButton.disabled = true;
-      approveButton.disabled = true;
-      rejectButton.disabled = true;
+    async function showStage(stepName, card) {
+      setPipelineStep(stepName, "active");
+      await delay(120);
+      if (card) {
+        showCard(card);
+      }
+      await delay(110);
+      if (stepName !== "approval") {
+        setPipelineStep(stepName, "complete");
+      }
+    }
+
+    async function handleAnalyze() {
+      if (!validateInputs()) {
+        setStatus("Enter valid source and target URLs before running the analysis.");
+        return;
+      }
+
+      resetUI();
+      setFlowState("analyzing");
+      resultsSection.hidden = false;
+      sessionModeValue.textContent = useMcpInput.checked ? "MCP" : "Direct";
+      setButtonLoading(analyzeButton, true, "Run Migration Analysis", "Analyzing migration...");
+      setStatus("Analyzing migration...", true);
+      setPipelineStep("discovery", "active");
 
       try {
         const response = await fetch("/api/analyze", {
@@ -509,41 +3596,44 @@
         });
 
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error("backend-error");
         }
 
         const data = await response.json();
         currentAnalysisId = data.analysis_id;
 
-        setRiskBadge(data.discovery.risk_level);
-        healthScore.textContent = data.discovery.health_score;
-        totalChanges.textContent = data.discovery.summary.total_changes;
-        criticalChanges.textContent = data.discovery.summary.critical_changes;
-        renderFindings(data.discovery.changes);
-        discoveryOutput.textContent = data.discovery.comparison_report;
-        riskOutput.textContent = data.risk_assessor;
-        diagnosticsOutput.textContent = data.diagnostician;
-        plannerOutput.textContent = data.planner;
+        renderDiscovery(data.discovery);
+        showCard(discoveryCard);
+        setPipelineStep("discovery", "complete");
+        await delay(160);
 
-        showStep(discoveryStep);
-        await delay(180);
-        showStep(riskStep);
-        await delay(180);
-        showStep(diagnosticsStep);
-        await delay(180);
-        showStep(plannerStep);
-        await delay(180);
-        showStep(approvalStep);
+        renderRiskCard(data);
+        await showStage("risk", riskCard);
 
+        renderDiagnosticsCard(data.diagnostician);
+        await showStage("diagnostics", diagnosticsCard);
+
+        renderPlanCard(data.planner);
+        await showStage("plan", planCard);
+
+        setPipelineStep("approval", "active");
+        showCard(approvalCard);
         approveButton.disabled = false;
         rejectButton.disabled = false;
+        sessionApprovalValue.textContent = "Awaiting";
+        setFlowState("approval");
         setStatus("Analysis complete. Review the findings and choose whether to approve remediation.");
       } catch (error) {
-        setStatus(`Analysis failed: ${error.message || error}`);
+        const message = error instanceof TypeError
+          ? "Cannot connect to backend. Run `python app.py` first."
+          : "Analysis failed. Check that Azure OpenAI credentials are configured.";
+        setFlowState("error");
+        showError(message);
+        setStatus(message);
       } finally {
-        analyzeButton.disabled = false;
+        setButtonLoading(analyzeButton, false, "Run Migration Analysis", "Analyzing migration...");
       }
-    });
+    }
 
     async function executeDecision(approved) {
       if (!currentAnalysisId) {
@@ -552,7 +3642,15 @@
 
       approveButton.disabled = true;
       rejectButton.disabled = true;
-      setStatus(approved ? "Executing approved remediation plan..." : "Recording rejection...", approved);
+
+      if (!approved) {
+        setFlowState("rejected");
+        setStatus("Recording rejection...");
+      } else {
+        setFlowState("executing");
+        setPipelineStep("execution", "active");
+        setStatus("Executing approved remediation...", true);
+      }
 
       try {
         const response = await fetch("/api/execute", {
@@ -565,23 +3663,51 @@
         });
 
         if (!response.ok) {
-          throw new Error(await response.text());
+          throw new Error("execution-error");
         }
 
         const data = await response.json();
-        executionOutput.textContent = approved ? data.executor : data.message;
-        showStep(executionStep);
-        setStatus(approved ? "Execution completed." : "Migration plan rejected.");
-      } catch (error) {
-        setStatus(`Execution failed: ${error.message || error}`);
-      } finally {
+
+        if (!approved) {
+          setApprovalNotice("error", "Migration execution rejected. No remediation actions were run.");
+          setPipelineStep("approval", "blocked");
+          sessionApprovalValue.textContent = "Rejected";
+          setFlowState("rejected");
+          setStatus("Migration execution rejected.");
+          return;
+        }
+
+        setPipelineStep("approval", "complete");
+        const parsedExecution = parseExecutor(data.executor || "");
+        executionRaw.textContent = data.executor || "";
+        renderExecution(parsedExecution);
+        showCard(executionCard);
+        setPipelineStep("execution", "complete");
+        sessionApprovalValue.textContent = "Approved";
+        setFlowState("complete");
+        setApprovalNotice("success", "Execution was approved. The executor ran simulated remediation steps and performed post-action verification.");
+        setStatus("Execution completed.");
+      } catch {
+        const message = "Execution failed. Review backend logs and credentials.";
+        setFlowState("error");
+        setApprovalNotice("error", message);
+        setStatus(message);
         approveButton.disabled = false;
         rejectButton.disabled = false;
       }
     }
 
+    analyzeButton.addEventListener("click", handleAnalyze);
     approveButton.addEventListener("click", () => executeDecision(true));
     rejectButton.addEventListener("click", () => executeDecision(false));
+
+    window.addEventListener("load", () => {
+      sourceUrlInput.value = "";
+      targetUrlInput.value = "";
+      sourceUrlInput.focus();
+      resetUI();
+      setHealthRing(0);
+    });
   </script>
 </body>
 </html>

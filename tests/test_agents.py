@@ -23,10 +23,17 @@ from agents.triager import create_risk_assessor_agent
 
 def _ensure_azure_runtime() -> None:
     load_dotenv()
-    if not os.environ.get("AZURE_OPENAI_ENDPOINT"):
-        pytest.skip("AZURE_OPENAI_ENDPOINT is not configured.")
-    if not os.environ.get("AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME"):
-        pytest.skip("AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME is not configured.")
+    has_openai_endpoint = bool(os.environ.get("AZURE_OPENAI_ENDPOINT"))
+    has_foundry_endpoint = bool(os.environ.get("AZURE_AI_PROJECT_ENDPOINT"))
+    has_deployment = bool(
+        os.environ.get("AZURE_AI_MODEL_DEPLOYMENT_NAME")
+        or os.environ.get("AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME")
+    )
+
+    if not has_openai_endpoint and not has_foundry_endpoint:
+        pytest.skip("No Azure OpenAI endpoint or Azure AI project endpoint is configured.")
+    if not has_deployment:
+        pytest.skip("No Azure model deployment name is configured.")
     if not os.environ.get("AZURE_OPENAI_API_KEY") and shutil.which("az") is None:
         pytest.skip("Azure auth is not available. Configure AZURE_OPENAI_API_KEY or install Azure CLI.")
 
@@ -115,4 +122,3 @@ async def test_executor_simulated() -> None:
     )
     output = str(result).lower()
     assert "simulated" in output, output
-

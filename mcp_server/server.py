@@ -3,6 +3,8 @@ What is MOCKED: Nothing.
 What is SIMULATED: Nothing.
 """
 
+import os
+
 from mcp.server.fastmcp import FastMCP
 
 from tools.health_checks import (
@@ -11,11 +13,15 @@ from tools.health_checks import (
     check_ssl_certificate as _check_ssl_certificate,
 )
 
+MCP_SERVER_HOST = os.environ.get("MCP_SERVER_HOST", "0.0.0.0")
+MCP_SERVER_PORT = int(os.environ.get("MCP_SERVER_PORT", os.environ.get("PORT", "8081")))
+MCP_STREAMABLE_HTTP_PATH = os.environ.get("MCP_STREAMABLE_HTTP_PATH", "/mcp")
+
 mcp = FastMCP(
     "MigrationOps Health Checks",
-    host="0.0.0.0",
-    port=8081,
-    streamable_http_path="/mcp",
+    host=MCP_SERVER_HOST,
+    port=MCP_SERVER_PORT,
+    streamable_http_path=MCP_STREAMABLE_HTTP_PATH,
 )
 
 

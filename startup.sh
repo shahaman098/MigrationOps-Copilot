@@ -2,4 +2,5 @@
 set -e
 
 pip install -r requirements.txt --pre
-uvicorn app:app --host 0.0.0.0 --port 8000
+PORT="${PORT:-8000}"
+uvicorn app:app --host 0.0.0.0 --port "${PORT}"
