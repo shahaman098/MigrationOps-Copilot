@@ -1,10 +1,21 @@
 # 🚀 MigrationOps Copilot
 
+[![Microsoft AI Dev Days Hackathon](https://img.shields.io/badge/Microsoft-AI%20Dev%20Days%20Hackathon%202026-blue)](https://aka.ms/aidevdayshackathon)
+[![Category: Build AI Apps & Agents](https://img.shields.io/badge/Category-Build%20AI%20Apps%20%26%20Agents-green)]()
+[![Category: Best Multi-Agent System](https://img.shields.io/badge/Category-Best%20Multi--Agent%20System-orange)]()
+[![CI](https://github.com/shahaman098/MigrationOps-Copilot/actions/workflows/ci.yml/badge.svg)](https://github.com/shahaman098/MigrationOps-Copilot/actions/workflows/ci.yml)
+
 **The AI-powered, multi-agent safeguard for website migrations.**
 
-MigrationOps Copilot is an auditable, multi-agent reasoning engine that intercepts and validates website migrations before they cause production outages. By capturing deep infrastructure snapshots across source and target environments, the system leverages a specialized swarm of agents to detect, diagnose, and plan remediation for DNS anomalies, SSL regressions, and HTTP degradation.
+> 🎥 **[Watch the 2-minute demo →](REPLACE_WITH_YOUTUBE_URL)**
 
-Instead of relying on fragile spot-checks, MigrationOps Copilot forces migrations through a rigorous, human-in-the-loop governance timeline—where discovery is live, reasoning is autonomous, and execution is strictly gated. Built on the **Microsoft Agent Framework** and fueled by **Azure OpenAI**.
+## 📸 Screenshots
+
+### CLI — Broken Migration Detection
+![CLI Output](docs/screenshots/cli-broken-migration.png)
+
+### Web UI — Migration Analysis Dashboard  
+![Web UI](docs/screenshots/web-ui.png)
 
 ---
 
@@ -23,68 +34,42 @@ Instead of relying on fragile spot-checks, MigrationOps Copilot forces migration
 
 ---
 
-## 🛠 Features Highlights
-
-- **Real-World Discovery:** Initiates actual TLS handshakes, performs strict DNS lookups, and reads true HTTP response matrices.
-- **Deep Snapshot Comparison:** Creates zero-hallucination diffs between environments, computing a deterministic Migration Health Score.
-- **Model Context Protocol (MCP):** Exposes health tools via an optional localized MCP server (`mcp_server`) to decouple discovery logic safely.
-- **Immutable Human Approval:** CLI and asynchronous API endpoints physically block execution until explicit human authorization is granted.
-- **Simulated Remediation:** Proves governance and tooling integration via safe abstractions (`cache_purge`, `cert_renewal`, `config_map`).
-
----
-
 ## 🧠 Why this exists
 
-Website migrations are one of the easiest ways to ship a hidden outage. SSL certificates expire on the new load balancer, DNS targets change but propagate unevenly, or critical paths return 404s after cutover. Small teams traditionally validate these changes with manual *curl* checks or ad-hoc browser testing. The result: subtle breakage reaches users first. 
-
-MigrationOps Copilot fixes this. It replaces fragile manual testing with a deterministic, AI-driven audit trail that validates exact state changes *before* traffic shifts fully.
+Website migrations are one of the easiest ways to ship a hidden outage, where SSL certificates expire on new load balancers, DNS targets change but propagate unevenly, or critical paths return 404s after cutover. Small teams traditionally validate these changes with manual *curl* checks or ad-hoc browser testing, meaning subtle breakage reaches users first. MigrationOps Copilot fixes this by replacing fragile manual testing with a deterministic, AI-driven audit trail that validates exact environment state changes *before* traffic shifts fully.
 
 ---
 
 ## ⚙️ What it does
 
-MigrationOps Copilot captures live state across two environments (Source and Target). It diffs the results and orchestrates a sequential pipeline of highly-specialized Azure OpenAI agents:
-1. It flags exact regressions in SSL trust, DNS resolution, and HTTP health.
-2. It assigns a risk category.
-3. It performs root-cause diagnostics on the breakage.
-4. It drafts a precise remediation plan.
-5. It blocks on a human approval gate.
-6. It formally "executes" the remediation plan against secure, simulated endpoints.
+MigrationOps Copilot captures live state across two environments (Source and Target), diffs the results, and orchestrates a pipeline of Azure OpenAI agents:
+1. Flags exact regressions in SSL trust, DNS resolution, and HTTP health.
+2. Assigns a migration risk category.
+3. Performs root-cause diagnostics on the breakage.
+4. Drafts a precise remediation plan.
+5. Blocks on a human approval gate.
+6. Formally "executes" the remediation plan against secure, simulated endpoints.
 
 ---
 
-## 🗺️ Demo / User Journey
+## 🏗️ Microsoft Technologies Used
 
-Imagine you are migrating `https://google.com` to `https://expired.badssl.com`. 
-1. **Trigger:** You run `python main.py https://google.com https://expired.badssl.com`.
-2. **Snapshot:** The system hits both URLs, noting `google.com` is healthy and `expired.badssl.com` has a fatal SSL expiration.
-3. **Reasoning:** 
-   - *Triager* flags the migration as `CRITICAL` risk with a health score of 15/100.
-   - *Diagnostician* roots the cause in an expired X.509 certificate on the target.
-   - *Planner* suggests running `simulate_cert_renewal()`.
-4. **Approval:** The CLI pauses. `Approve this migration remediation plan? (y/n):`
-5. **Execution:** You hit `y`. The Executor agent spins up, reads the plan, and safely triggers the simulated certificate renewal tool, returning a secure audit log.
-
----
-
-## 📂 Repository at a glance
-
-| Path | Purpose |
-| :--- | :--- |
-| `main.py` | CLI entrypoint orchestrating the multi-agent pipeline. |
-| `app.py` | FastAPI application serving the Web UI and asynchronous API. |
-| `pipeline.py` | The core state machine defining edge tools and agent sequence. |
-| `agents/` | Handlers for Triager, Diagnostician, Planner, Executor, and Monitor agents. |
-| `tools/baseline.py` | The real-world networking diff engine calculating Migration Health. |
-| `tools/health_checks.py` | Live SSL, DNS, and HTTP inspection tools. |
-| `tools/remediation.py` | Safe, simulated infrastructure modification tools. |
-| `mcp_server/` | Optional Model Context Protocol server exposing baseline tools natively. |
+| Technology | How It's Used | Status |
+|:---|:---|:---|
+| **Microsoft Agent Framework** | All reasoning agents (Risk Assessor, Diagnostician, Planner, Executor) built with `AzureOpenAIResponsesClient` and `@tool` decorator | ✅ Implemented |
+| **Azure OpenAI (via Foundry)** | LLM backend powering all agent reasoning and decision-making | ✅ Implemented |
+| **Model Context Protocol (MCP)** | Custom MCP server exposing health check tools; agents discover and call tools via MCP protocol | ✅ Implemented |
+| **Azure App Service** | Deployment target with Procfile, startup script, and full deployment documentation | ✅ Documented |
+| **GitHub Actions** | CI pipeline running automated tool and baseline tests on every push | ✅ Implemented |
+| **GitHub Copilot** | Used during development to accelerate implementation | ✅ Used |
 
 ---
 
 ## 🏛️ System Architecture
 
-MigrationOps Copilot relies on edge-side discovery tools and localized MCP servers to fetch infrastructure truths. These truths are passed sequentially through a strict chain of intelligent agents, forcing a structural boundary before mutation.
+MigrationOps Copilot forces migrations through a rigorous, human-in-the-loop governance timeline—where discovery is live, reasoning is autonomous, and execution is strictly gated. 
+
+*(For deep implementation details, state flow mapping, and limitations, see [docs/architecture.md](docs/architecture.md))*
 
 ```mermaid
 graph TD
@@ -127,72 +112,56 @@ graph TD
     EX --> SIM
 ```
 
-**Subsystem Breakdown:**
-- **Discovery (Real):** Uses native Python networking (HTTPX, Socket, SSL) to fetch ground truths.
-- **Reasoning (Real):** Agents initialized with `AzureOpenAIResponsesClient` communicating over the Microsoft Agent Framework.
-- **Execution (Simulated):** Agents emit tooling functions handled securely without altering root system state.
+---
+
+## 🤖 Agent Details
+
+| Agent | Role | Input | Output | Tools |
+|-------|------|-------|--------|-------|
+| Discovery | Capture source and target state | Source URL, Target URL | Two live snapshots and a comparison report | `check_ssl_certificate`, `check_http_status`, `check_dns_resolution` |
+| Risk Assessor | Classify migration risk | Comparison report | Risk level, blocking issues, recommendation | None |
+| Diagnostician | Explain root causes | Risk assessment | Root cause analysis per issue | None |
+| Planner | Build remediation plan | Diagnostics report | Prioritized remediation plan | None |
+| Executor | Simulate approved fixes | Approved plan and migration context | Execution log and final verification status | `simulate_cert_renewal`, `simulate_cache_purge`, `simulate_config_update` |
 
 ---
 
-## 🏎️ How it works (Data Flow)
+## 🔬 Real vs. Simulated
 
-Data precisely cascades down the sequence. An agent only sees the prompt constraint, the tool outputs, and the raw text transmitted from the previous agent.
+| Component | Status | Detail |
+|:---|:---|:---|
+| SSL certificate check | ✅ **REAL** | Actual TLS handshake via Python `ssl` + `socket` |
+| HTTP status check | ✅ **REAL** | Actual HTTP request via `httpx` |
+| DNS resolution | ✅ **REAL** | Actual DNS lookup via `socket.getaddrinfo` |
+| Snapshot comparison | ✅ **REAL** | Deterministic JSON diff with health scoring |
+| Agent reasoning | ✅ **REAL** | Live Azure OpenAI calls via Agent Framework |
+| Human approval gate | ✅ **REAL** | CLI `input()` and Web UI approve/reject buttons |
+| Certificate renewal | ⚠️ **SIMULATED** | Logged with `"simulated": true`, never executed |
+| Cache purge | ⚠️ **SIMULATED** | Logged with `"simulated": true`, never executed |
+| Config update | ⚠️ **SIMULATED** | Logged with `"simulated": true`, never executed |
 
-```mermaid
-flowchart LR
-    SNA[Discover Tools <br/> Snapshot JSON] -->|Comparison| RA[Triager Agent]
-    RA -->|Markdown Context| DX[Diagnostician Agent]
-    DX -->|Markdown Context| PL[Planner Agent]
-    PL -->|Markdown Context| AP{Approval Gate}
-    AP -->|Approved Plan| EX[Executor Agent]
-```
-
-### Execution Lifecycle
-1. **Startup:** `load_dotenv()` initializes the Azure OpenAI Identity connection.
-2. **Request:** Client inputs source and target via `/api/analyze` or `main.py`.
-3. **Processing:** The Pipeline triggers `baseline.py`. Output strings route strictly from `Triager -> Diagnostician -> Planner`.
-4. **Output:** The end user is presented with the compiled diagnostics and remediation plan.
+> Remediation is intentionally simulated for safety. In production, these connect to real infrastructure APIs.
 
 ---
 
-## 🧬 Core Technical Concepts
+## ✅ Verified Scenarios
 
-- **Sequential Pipeline vs Autonomous Loop:** By strictly moving from Discovery -> Triager -> Planner, the system limits the LLM's capability to hallucinate context or loop endlessly on simple tasks.
-- **Data Grounding:** The foundation of all reasoning is a structured, deterministically compared JSON diff (`before_snapshot` vs `after_snapshot`). The LLM does not perform the inspection; it only interprets the hard data.
-- **Security-First Mutability:** Destructive tooling (`tools/remediation.py`) explicitly mocks out its behavior. The orchestration logic is proven while keeping environments 100% safe.
+| Source | Target | Risk Level | Health Score | Recommendation |
+|:---|:---|:---|:---|:---|
+| `google.com` | `expired.badssl.com` | 🔴 CRITICAL | 15/100 | BLOCK MIGRATION |
+| `google.com` | `google.com` | 🟢 LOW | 100/100 | PROCEED |
 
----
-
-## 🧩 Key Modules
-
-### `pipeline.py`
-- **Purpose:** Central nervous system of the repository.
-- **Inputs:** `source_url`, `target_url`, `use_mcp`.
-- **Outputs:** Consolidated JSON dict enclosing all agent outputs.
-- **Dependencies:** `agents.*`, `tools.*`, `azure_client`.
-
-### `agents/triager.py`
-- **Purpose:** Initial risk classification.
-- **Inputs:** Snapshot comparison string.
-- **Outputs:** Risk level, blocking status string.
-
-### `tools/baseline.py`
-- **Purpose:** Pure network IO execution.
-- **Outputs:** Deduplicated finding IDs and an aggregate Health Score.
-- **Relationships:** Powers the entire "Real" part of the application before LLM abstraction.
+All scenarios verified via automated tests and manual CLI/Web UI/MCP testing.
 
 ---
 
-## 💻 Developer Experience
+## 💻 Quick Start
 
-### Quick Start
-Ready to run out of the box with standard Python packaging.
-
-**1. Prerequisites**
+**Prerequisites**
 - Python 3.10+
 - Azure CLI (`az login`) or `AZURE_OPENAI_API_KEY`
 
-**2. Install**
+**Setup**
 ```bash
 git clone https://github.com/shahaman098/MigrationOps-Copilot.git
 cd MigrationOps-Copilot
@@ -202,25 +171,15 @@ python -m pip install -r requirements.txt --pre
 cp .env.example .env
 ```
 
-**3. Local CLI Run**
+**Local CLI Run**
 ```bash
 python main.py https://google.com https://expired.badssl.com
 ```
 
-**4. Web Server Run**
+**Web Server Run**
 ```bash
 python app.py
 # Open http://localhost:8000
-```
-
-**5. Testing Phase**
-Tests are separated by required credentials.
-```bash
-# Non-Azure Network Tests
-python -m pytest tests/test_tools.py tests/test_baseline.py -v
-
-# Azure-dependent LLM Tests
-python -m pytest tests/test_agents.py tests/test_pipeline.py -v
 ```
 
 ---
@@ -254,79 +213,50 @@ Set via `.env` at the root of the project.
 
 ---
 
-## ⚖️ Architecture Decisions
+## 📂 Project Structure
 
-**Observed:**
-- **Human Governance Native:** The approval step is physically hard-coded into `main.py` and decoupled cleanly in `app.py` via asynchronous polling mechanisms. The system assumes autonomous mutation on infrastructure is fundamentally unsafe without a gate.
-- **Model Context Protocol Validation:** By abstracting the network tools through an MCP Server, the repository proves that external logic networks can safely audit an environment even if the agent processing lives securely off-premises.
-
-**Inferred:**
-- **Ephemeral State Architecture:** In `app.py`, state is held loosely in a Python global dictionary (`analysis_store`). This removes database scaffolding dependencies for the Hackathon context, implying it's optimized for stateless rapid deployment (e.g., Azure App Service containers).
-
----
-
-## 🚧 Current Limitations
-
-- **Stateless API Memory:** As currently configured, restarting the `app.py` container clears the `analysis_store`, losing pending Execution states.
-- **Deep DOM Spidering:** Health checks are restricted to SSL, DNS, and root index status. It does not recursive-spider applications for nested 404 links post-migration.
-- **Simulated Executor Constraints:** The `simulate_cert_renewal()` tools intentionally stop short of actual system modifications. 
-
----
-
-## 🚀 Roadmap & Likely Next Steps
-
-- *(Inferred)* Implementation of a Redis or SQLite storage backend for `analysis_store` to support distributed horizontal scaling.
-- *(Inferred)* Expanding toolkits to actual Azure/AWS API execution layers integrating proper IAC modifying libraries.
-- Expanding the Discovery agent suite to parse multi-page HTTP paths and deeper latency distribution graphs.
-
----
-
-## 🌟 Why this repo is technically interesting
-
-MigrationOps Copilot demonstrates a masterclass in **Agentic Workflow Mapping**. Most initial LLM AI deployments errantly assign infinite tooling arrays to a single unbounded agent, resulting in context confusion, looping, and unpredictable infrastructure states. 
-
-This repository enforces a **Supply Chain of AI Reasoning**. It fuses System 1 reasoning (deterministic, rapid Python network IO) perfectly with System 2 reasoning (deliberate, multi-stage Agent Swarms). It uses explicit sequential boundaries, effectively stopping hallucinations at the perimeter. It is a premium, structurally-sound exploration of modern SRE automation.
-
----
-
-### Example Workflow 
-
-A complete end-to-end execution of the safe "control" workflow.
-
-```bash
-$ python main.py https://google.com https://google.com
-
-[DISCOVERY]
-MIGRATION COMPARISON REPORT
-Source: https://google.com
-Target: https://google.com
-...
-Changes Detected: No changes detected.
-Overall Risk: LOW
-Migration Health Score: 100
-
-[RISK ASSESSOR]
-Risk Level: LOW 
-All targets match successfully.
-
-[DIAGNOSTICIAN]
-No root causes found. Infrastructure states match.
-
-[PLANNER]
-Recommendation: Validate execution cleanly.
-
-Approve this migration remediation plan? (y/n): y
-
-[EXECUTOR]
-No action required. Migration is validated.
+```text
+MigrationOps-Copilot/
+├── .github/workflows/
+│   └── ci.yml
+├── agents/
+│   ├── __init__.py, diagnostician.py, executor.py, monitor.py, planner.py, triager.py
+├── docs/
+│   ├── architecture.md
+│   ├── azure-deploy.md
+│   └── screenshots/
+│       ├── cli-broken-migration.png
+│       └── web-ui.png
+├── mcp_server/
+│   ├── __init__.py, server.py, README.md
+├── static/
+│   └── index.html
+├── tests/
+│   ├── test_agents.py, test_baseline.py, test_monitor.py, test_pipeline.py, test_tools.py
+├── tools/
+│   ├── __init__.py, baseline.py, health_checks.py, remediation.py
+├── .env.example
+├── .gitignore
+├── app.py
+├── azure_client.py
+├── DEMO_SCRIPT.md
+├── LICENSE
+├── main.py
+├── pipeline.py
+├── Procfile
+├── requirements.txt
+├── smoke_test.py
+└── startup.sh
 ```
 
 ---
 
-## Contributing
+## 🏆 Hackathon Category
 
-Review the architecture paths and submit a Pull Request describing your agent or tooling addition in full detail. Ensure tests run successfully without Azure-access bindings.
+**Primary target:** Build AI Applications & Agents using Microsoft AI Platform and tools  
+**Secondary target:** Best Multi-Agent System
+
+MigrationOps Copilot demonstrates a production-grade multi-agent pipeline where specialized agents collaborate through sequential handoffs with human-in-the-loop governance to solve the real-world problem of website migration validation. Built entirely on Microsoft Agent Framework and Azure OpenAI.
 
 ---
-
-Built to validate confidence. Engineered to eliminate hidden outages.
+*Built for the Microsoft AI Dev Days Global Hackathon 2026. Engineered to eliminate hidden migration outages.*
