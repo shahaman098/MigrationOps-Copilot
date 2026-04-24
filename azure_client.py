@@ -23,6 +23,23 @@ def is_foundry_configured() -> bool:
     return bool(os.environ.get("AZURE_AI_PROJECT_ENDPOINT"))
 
 
+def is_azure_openai_configured() -> bool:
+    """Return True when enough environment is present to initialize reasoning clients."""
+
+    load_dotenv()
+
+    if os.environ.get("AZURE_AI_PROJECT_ENDPOINT"):
+        return bool(
+            os.environ.get("AZURE_AI_MODEL_DEPLOYMENT_NAME")
+            or os.environ.get("AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME"),
+        )
+
+    return bool(
+        os.environ.get("AZURE_OPENAI_ENDPOINT")
+        and os.environ.get("AZURE_OPENAI_RESPONSES_DEPLOYMENT_NAME"),
+    )
+
+
 def get_model_deployment_name() -> str:
     """Resolve the model deployment name across direct Azure OpenAI and Foundry modes."""
 

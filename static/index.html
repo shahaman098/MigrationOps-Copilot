@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MigrationOps Copilot</title>
+  <link rel="icon" type="image/png" href="/static/logo-inline-small.png">
   <style>
     :root {
       --bg-primary: #0a0a0a;
@@ -1851,9 +1852,1762 @@
       line-height: 1.5;
     }
 
+    /* Enterprise redesign overrides */
+    :root {
+      --bg-primary: #edf3f8;
+      --bg-secondary: #dfe8f1;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f7fafc;
+      --border-subtle: rgba(15, 23, 42, 0.08);
+      --border-medium: rgba(15, 23, 42, 0.16);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-blue: #165d96;
+      --accent-teal: #0f766e;
+      --accent-violet: #0b4f7a;
+      --risk-critical: #dc2626;
+      --risk-high: #ea580c;
+      --risk-medium: #ca8a04;
+      --risk-low: #15803d;
+      --success: #15803d;
+      --warning: #ca8a04;
+      --error: #dc2626;
+      --ring-track: #dbe5ef;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+      --shadow-heavy: 0 24px 56px rgba(15, 23, 42, 0.12);
+      --font-sans: "IBM Plex Sans", "Aptos", "Segoe UI", sans-serif;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", "Cascadia Code", monospace;
+    }
+
+    html {
+      color-scheme: light;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(22, 93, 150, 0.08), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(15, 118, 110, 0.08), transparent 22%),
+        linear-gradient(180deg, #f7fafc 0%, var(--bg-primary) 46%, #eaf1f7 100%);
+      color: var(--text-primary);
+    }
+
+    body::before,
+    body::after {
+      content: none;
+      display: none;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .workspace-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      overflow-y: auto;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 28%),
+        linear-gradient(180deg, #10253c 0%, #173552 52%, #1b3f62 100%);
+      color: #d8e4f0;
+      border-right: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .workspace-sidebar__brand {
+      display: grid;
+      gap: 12px;
+      padding: 4px 6px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .workspace-sidebar__lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .workspace-sidebar__logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      object-fit: contain;
+    }
+
+    .workspace-sidebar__title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fbff;
+    }
+
+    .workspace-sidebar__subtitle,
+    .workspace-sidebar__small,
+    .sidebar-nav__group-label,
+    .sidebar-card__eyebrow,
+    .sidebar-stat span {
+      color: rgba(216, 228, 240, 0.74);
+    }
+
+    .workspace-sidebar__subtitle {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .sidebar-nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .sidebar-nav__group-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0 6px;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-nav__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      color: #d8e4f0;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      text-decoration: none;
+      transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+      cursor: pointer;
+    }
+
+    .sidebar-nav__item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    .sidebar-nav__item.is-active {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      box-shadow: 0 12px 30px rgba(2, 6, 23, 0.16);
+    }
+
+    .sidebar-nav__item span:last-child {
+      color: rgba(216, 228, 240, 0.64);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .sidebar-card {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .sidebar-card__eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-card__title {
+      margin: 0;
+      color: #ffffff;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .sidebar-card__copy {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.6;
+      color: rgba(226, 232, 240, 0.84);
+    }
+
+    .sidebar-stat-list,
+    .sidebar-checklist {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sidebar-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-stat strong {
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .sidebar-stat span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: right;
+    }
+
+    .sidebar-checklist div {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: rgba(226, 232, 240, 0.84);
+    }
+
+    .sidebar-checklist div::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      margin-top: 7px;
+      border-radius: 50%;
+      background: #7dd3fc;
+      box-shadow: 0 0 0 6px rgba(125, 211, 252, 0.12);
+    }
+
+    .workspace-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .workspace-header {
+      position: sticky;
+      top: 0;
+      z-index: 16;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 24px 32px 18px;
+      background: linear-gradient(180deg, rgba(237, 243, 248, 0.985), rgba(237, 243, 248, 0.985));
+      border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .workspace-header__eyebrow,
+    .overview-card__label,
+    .section-panel__eyebrow,
+    .workspace-meta__label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .workspace-header__eyebrow {
+      color: #165d96;
+      margin-bottom: 8px;
+    }
+
+    .product-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .product-brand__logo {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 10px 18px rgba(22, 93, 150, 0.14));
+    }
+
+    .product-brand__lockup {
+      display: grid;
+      gap: 2px;
+    }
+
+    .product-brand__name {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .product-brand__tagline {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .workspace-header__title {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.06;
+      letter-spacing: -0.04em;
+      color: #0f172a;
+    }
+
+    .workspace-header__copy {
+      margin: 0;
+      max-width: 760px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .workspace-header__actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(140px, 1fr));
+      gap: 10px;
+      min-width: min(100%, 520px);
+    }
+
+    .workspace-meta {
+      display: grid;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: rgba(255, 255, 255, 0.74);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .workspace-meta__label {
+      color: #64748b;
+    }
+
+    .workspace-meta__value {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .workspace-content {
+      padding: 24px 32px 40px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .opening-stage {
+      position: relative;
+      overflow: hidden;
+      padding: 32px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 12% 24%, rgba(125, 211, 252, 0.18), transparent 22%),
+        radial-gradient(circle at 82% 12%, rgba(56, 189, 248, 0.16), transparent 20%),
+        linear-gradient(135deg, #071826 0%, #0f2740 42%, #12375d 100%);
+      border: 1px solid rgba(125, 211, 252, 0.16);
+      box-shadow: 0 28px 70px rgba(3, 7, 18, 0.28);
+      isolation: isolate;
+    }
+
+    .opening-stage::before,
+    .opening-stage::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .opening-stage::before {
+      top: -60px;
+      right: -40px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.24), transparent 70%);
+      filter: blur(8px);
+      animation: floatHeroGlow 14s ease-in-out infinite;
+    }
+
+    .opening-stage::after {
+      left: -140px;
+      bottom: -180px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.18), transparent 72%);
+      filter: blur(18px);
+      animation: floatHeroGlow 18s ease-in-out infinite reverse;
+    }
+
+    .opening-stage__grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+      gap: 28px;
+      align-items: center;
+    }
+
+    .opening-stage__content,
+    .opening-stage__visual {
+      position: relative;
+      z-index: 1;
+    }
+
+    .opening-stage__kicker,
+    .opening-stage__eyebrow,
+    .opening-stage__metric-label,
+    .demo-card__label,
+    .story-chip__label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .opening-stage__kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: #bae6fd;
+    }
+
+    .opening-stage__kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #67e8f9;
+      box-shadow: 0 0 0 10px rgba(103, 232, 249, 0.12);
+      animation: pulseBeacon 2.4s ease-in-out infinite;
+    }
+
+    .opening-stage__title {
+      margin: 0 0 18px;
+      max-width: 760px;
+      color: #f8fbff;
+      font-size: clamp(42px, 5vw, 66px);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      text-wrap: balance;
+    }
+
+    .opening-stage__copy {
+      margin: 0 0 22px;
+      max-width: 620px;
+      color: rgba(226, 232, 240, 0.86);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .opening-stage__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .button-primary.button-hero {
+      padding: 14px 22px;
+      min-height: 50px;
+      background: linear-gradient(180deg, #38bdf8, #0f7db0);
+      color: #071826;
+      font-weight: 800;
+      box-shadow: 0 18px 34px rgba(14, 165, 233, 0.28);
+    }
+
+    .button-primary.button-hero:hover:not(:disabled) {
+      background: linear-gradient(180deg, #67e8f9, #0ea5e9);
+    }
+
+    .button-secondary.button-hero-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(186, 230, 253, 0.18);
+      color: #f8fbff;
+    }
+
+    .button-secondary.button-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(186, 230, 253, 0.28);
+    }
+
+    .opening-stage__metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .opening-stage__metric {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(186, 230, 253, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(14px);
+    }
+
+    .opening-stage__metric-value {
+      display: block;
+      margin-bottom: 6px;
+      color: #f8fbff;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .opening-stage__metric-label {
+      color: rgba(186, 230, 253, 0.76);
+      margin-bottom: 4px;
+    }
+
+    .opening-stage__metric-copy {
+      color: rgba(226, 232, 240, 0.72);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .opening-stage__ticker {
+      overflow: hidden;
+      padding: 14px 0 2px;
+      mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    }
+
+    .opening-stage__ticker-track {
+      display: flex;
+      gap: 12px;
+      width: max-content;
+      animation: tickerSlide 24s linear infinite;
+    }
+
+    .story-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(186, 230, 253, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .story-chip__label {
+      color: rgba(186, 230, 253, 0.72);
+    }
+
+    .story-chip__value {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f8fbff;
+    }
+
+    .opening-stage__visual {
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+    }
+
+    .kinetic-board {
+      position: relative;
+      width: min(100%, 520px);
+      min-height: 520px;
+      padding: 26px;
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+        rgba(6, 18, 32, 0.78);
+      border: 1px solid rgba(125, 211, 252, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 60px rgba(2, 6, 23, 0.34);
+      overflow: hidden;
+    }
+
+    .kinetic-board::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 72px 72px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .kinetic-board__header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .kinetic-board__title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .kinetic-board__title strong {
+      color: #f8fbff;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .kinetic-board__title span {
+      color: rgba(226, 232, 240, 0.74);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.22);
+      color: #dcfce7;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .live-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 0 8px rgba(74, 222, 128, 0.12);
+      animation: pulseBeacon 2s ease-in-out infinite;
+    }
+
+    .kinetic-board__network {
+      position: relative;
+      z-index: 1;
+      min-height: 280px;
+      border-radius: 26px;
+      background: radial-gradient(circle at center, rgba(14, 165, 233, 0.12), rgba(2, 6, 23, 0.14) 72%);
+      border: 1px solid rgba(125, 211, 252, 0.12);
+      overflow: hidden;
+    }
+
+    .kinetic-board__network::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 12%, rgba(255, 255, 255, 0.12) 50%, transparent 88%);
+      transform: translateX(-120%);
+      animation: sweepPanel 5.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(125, 211, 252, 0.14);
+      animation: orbitSpin 18s linear infinite;
+    }
+
+    .orbit-ring--outer {
+      width: 270px;
+      height: 270px;
+    }
+
+    .orbit-ring--mid {
+      width: 196px;
+      height: 196px;
+      animation-direction: reverse;
+      animation-duration: 12s;
+    }
+
+    .orbit-node {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #7dd3fc;
+      box-shadow: 0 0 0 10px rgba(125, 211, 252, 0.1), 0 0 18px rgba(125, 211, 252, 0.34);
+    }
+
+    .orbit-ring--outer .orbit-node:nth-child(1) {
+      top: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .orbit-ring--outer .orbit-node:nth-child(2) {
+      right: 16%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .orbit-ring--outer .orbit-node:nth-child(3) {
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .orbit-ring--mid .orbit-node:nth-child(1) {
+      top: 18%;
+      right: 22%;
+    }
+
+    .orbit-ring--mid .orbit-node:nth-child(2) {
+      bottom: 20%;
+      left: 22%;
+    }
+
+    .network-core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle, rgba(103, 232, 249, 0.24), rgba(14, 165, 233, 0.12) 58%, transparent 78%);
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      box-shadow: inset 0 0 26px rgba(125, 211, 252, 0.12), 0 0 34px rgba(14, 165, 233, 0.16);
+    }
+
+    .network-core__inner {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 4px;
+      background: rgba(7, 24, 38, 0.88);
+      color: #f8fbff;
+      text-align: center;
+      box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.1);
+    }
+
+    .network-core__value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .network-core__label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(186, 230, 253, 0.76);
+    }
+
+    .beam {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 240px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(103, 232, 249, 0.7), transparent);
+      transform-origin: left center;
+      animation: beamSweep 7s ease-in-out infinite;
+      opacity: 0.9;
+    }
+
+    .beam--one {
+      transform: translate(-50%, -50%) rotate(16deg);
+    }
+
+    .beam--two {
+      transform: translate(-50%, -50%) rotate(-28deg);
+      animation-delay: -2s;
+    }
+
+    .beam--three {
+      transform: translate(-50%, -50%) rotate(94deg);
+      animation-delay: -4s;
+    }
+
+    .demo-card {
+      position: absolute;
+      min-width: 164px;
+      max-width: 190px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(186, 230, 253, 0.14);
+      color: #f8fbff;
+      box-shadow: 0 20px 40px rgba(2, 6, 23, 0.22);
+      backdrop-filter: blur(14px);
+      animation: floatDemoCard 10s ease-in-out infinite;
+    }
+
+    .demo-card--risk {
+      top: 18px;
+      right: 20px;
+      animation-delay: -1.5s;
+    }
+
+    .demo-card--source {
+      left: 18px;
+      top: 112px;
+      animation-delay: -5s;
+    }
+
+    .demo-card--approval {
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      animation-delay: -3s;
+    }
+
+    .demo-card--target {
+      right: 18px;
+      bottom: 110px;
+      animation-delay: -7s;
+    }
+
+    .demo-card__label {
+      display: block;
+      margin-bottom: 6px;
+      color: rgba(186, 230, 253, 0.74);
+    }
+
+    .demo-card__title {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 6px;
+      color: #f8fbff;
+    }
+
+    .demo-card__copy {
+      color: rgba(226, 232, 240, 0.78);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .demo-card__copy strong {
+      color: #f8fbff;
+    }
+
+    .kinetic-board__timeline {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .timeline-chip {
+      padding: 12px 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(186, 230, 253, 0.12);
+      display: grid;
+      gap: 6px;
+      justify-items: start;
+      animation: revealPulse 4.8s ease-in-out infinite;
+    }
+
+    .timeline-chip:nth-child(2) {
+      animation-delay: -0.9s;
+    }
+
+    .timeline-chip:nth-child(3) {
+      animation-delay: -1.8s;
+    }
+
+    .timeline-chip:nth-child(4) {
+      animation-delay: -2.7s;
+    }
+
+    .timeline-chip__index {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(103, 232, 249, 0.14);
+      border: 1px solid rgba(103, 232, 249, 0.2);
+      color: #67e8f9;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .timeline-chip__title {
+      color: #f8fbff;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .timeline-chip__copy {
+      color: rgba(186, 230, 253, 0.7);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .overview-grid,
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .overview-card,
+    .section-panel,
+    .hero-card,
+    .pipeline-shell,
+    .card,
+    .rail-card,
+    .summary-panel,
+    .snapshot-card,
+    .info-card,
+    .finding-row,
+    .issue-card,
+    .plan-step,
+    .monitor-item,
+    .timeline-item,
+    .verification-item,
+    .raw-details,
+    .signal-card,
+    .guide-card,
+    .health-panel,
+    .rail-stat {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+    }
+
+    .overview-card {
+      padding: 18px 20px;
+      border-radius: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .overview-card__label {
+      color: #64748b;
+    }
+
+    .overview-card__value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .overview-card__copy {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .control-layout,
+    .operations-grid,
+    .hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 16px;
+      margin: 0;
+    }
+
+    .section-panel,
+    .hero-card {
+      padding: 24px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .section-panel::before,
+    .hero-card::before,
+    .card::before,
+    .rail-card::before,
+    .pipeline-shell::before {
+      background: linear-gradient(90deg, transparent, rgba(22, 93, 150, 0.18), transparent);
+    }
+
+    .section-panel__eyebrow {
+      color: #165d96;
+      margin-bottom: 12px;
+    }
+
+    .section-panel__title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .section-panel__copy {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .eyebrow {
+      background: rgba(22, 93, 150, 0.08);
+      border-color: rgba(22, 93, 150, 0.16);
+      color: #165d96;
+    }
+
+    .hero-title {
+      font-size: 30px;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .hero-copy {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      color: #475569;
+    }
+
+    .field-hint {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .input-shell {
+      background: #f8fafc;
+      border-color: rgba(15, 23, 42, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .input-shell:focus-within {
+      border-color: rgba(22, 93, 150, 0.72);
+      box-shadow: 0 0 0 4px rgba(22, 93, 150, 0.08);
+    }
+
+    .input-icon,
+    input[type="url"]::placeholder {
+      color: #94a3b8;
+    }
+
+    input[type="url"] {
+      color: #0f172a;
+      font-size: 14px;
+    }
+
+    .hero-actions {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button-primary {
+      background: linear-gradient(180deg, #165d96, #0f4f81);
+      box-shadow: 0 16px 32px rgba(15, 79, 129, 0.22);
+    }
+
+    .button-primary:hover:not(:disabled) {
+      background: #0f4f81;
+    }
+
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      background: rgba(248, 250, 252, 0.92);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    .button-secondary:hover {
+      background: #ffffff;
+      border-color: rgba(22, 93, 150, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .hero-meta {
+      padding-top: 14px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      align-items: flex-start;
+    }
+
+    .hero-note {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .toggle {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .toggle input {
+      background: rgba(148, 163, 184, 0.22);
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    .toggle input::before {
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+    }
+
+    .toggle input:checked {
+      background: #165d96;
+      border-color: #165d96;
+    }
+
+    .policy-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .policy-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: default;
+    }
+
+    .policy-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #165d96;
+      box-shadow: 0 0 0 5px rgba(22, 93, 150, 0.08);
+    }
+
+    .status-bar {
+      margin-top: 16px;
+      padding: 12px 14px;
+      min-height: 44px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px dashed rgba(15, 23, 42, 0.12);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .sample-strip {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+      display: grid;
+      gap: 10px;
+    }
+
+    .sample-strip__label {
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .sample-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .sample-button {
+      padding: 10px 14px;
+      min-height: 42px;
+    }
+
+    .analysis-mode-banner {
+      display: grid;
+      gap: 8px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.96));
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .analysis-mode-banner strong {
+      font-size: 13px;
+      color: #0f172a;
+    }
+
+    .analysis-mode-banner p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .support-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .brief-list,
+    .control-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .brief-list div,
+    .control-list div {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .brief-list div::before,
+    .control-list div::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 6px;
+      border-radius: 50%;
+      background: #165d96;
+      box-shadow: 0 0 0 6px rgba(22, 93, 150, 0.08);
+    }
+
+    .brief-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .brief-stat {
+      padding: 12px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .brief-stat strong {
+      display: block;
+      font-size: 17px;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .brief-stat span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+    }
+
+    .brief-stat p {
+      margin: 6px 0 0;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .pipeline-shell {
+      padding: 22px 24px;
+      margin-bottom: 0;
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.92)),
+        var(--bg-card);
+    }
+
+    .pipeline-shell::after {
+      background:
+        radial-gradient(circle at 10% 50%, rgba(22, 93, 150, 0.08), transparent 18%),
+        radial-gradient(circle at 88% 52%, rgba(15, 118, 110, 0.08), transparent 20%);
+    }
+
+    .pipeline-shell__title strong,
+    .card-title,
+    .rail-card__title,
+    .summary-headline,
+    .issue-title,
+    .plan-step__title,
+    .verification-title {
+      color: #0f172a;
+    }
+
+    .pipeline-shell__title span,
+    .card-subtitle,
+    .rail-card__copy,
+    .summary-copy,
+    .issue-copy,
+    .plan-step__detail,
+    .monitor-item,
+    .timeline-item__body,
+    .verification-item,
+    .approval-copy,
+    .footer {
+      color: var(--text-secondary);
+    }
+
+    .pipeline-step::after,
+    .timeline-item::before {
+      background: rgba(148, 163, 184, 0.34);
+    }
+
+    .pipeline-dot {
+      border-color: rgba(15, 23, 42, 0.14);
+      background: #f8fafc;
+      color: #475569;
+    }
+
+    .pipeline-step[data-state="active"] .pipeline-dot {
+      background: rgba(22, 93, 150, 0.1);
+      border-color: rgba(22, 93, 150, 0.5);
+      color: #165d96;
+      box-shadow: 0 0 0 6px rgba(22, 93, 150, 0.08), 0 0 22px rgba(22, 93, 150, 0.14);
+    }
+
+    .pipeline-step[data-state="complete"] .pipeline-dot {
+      background: #165d96;
+      border-color: #165d96;
+      box-shadow: 0 0 0 6px rgba(22, 93, 150, 0.08), 0 0 16px rgba(22, 93, 150, 0.16);
+    }
+
+    .pipeline-step[data-state="active"] .pipeline-label,
+    .pipeline-step[data-state="complete"] .pipeline-label {
+      color: #0f172a;
+    }
+
+    .signal-card,
+    .guide-card,
+    .aside-card {
+      border-radius: 18px;
+    }
+
+    .results-layout {
+      gap: 20px;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+    }
+
+    .results-main,
+    .results-rail {
+      gap: 20px;
+    }
+
+    .card,
+    .rail-card {
+      padding: 24px;
+      border-radius: 20px;
+    }
+
+    .rail-stat {
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .rail-stat strong,
+    .status-value,
+    .timeline-item__time,
+    .raw-details pre {
+      color: #334155;
+    }
+
+    .snapshot-card,
+    .health-panel,
+    .summary-panel,
+    .info-card,
+    .finding-row,
+    .issue-card,
+    .plan-step,
+    .monitor-item,
+    .timeline-item,
+    .verification-item,
+    .raw-details {
+      background: #f8fafc;
+    }
+
+    .summary-metric,
+    .rail-stat,
+    .brief-stat {
+      background: #ffffff;
+    }
+
+    .health-ring::after {
+      background: #ffffff;
+      border-color: rgba(15, 23, 42, 0.05);
+    }
+
+    .recommendation-banner.critical,
+    .approval-banner.error,
+    .final-status.error,
+    .error-card {
+      color: #991b1b;
+      background: rgba(254, 242, 242, 0.96);
+      border-color: rgba(220, 38, 38, 0.18);
+    }
+
+    .recommendation-banner.high,
+    .recommendation-banner.medium {
+      color: #92400e;
+      background: rgba(255, 251, 235, 0.96);
+      border-color: rgba(202, 138, 4, 0.2);
+    }
+
+    .recommendation-banner.low,
+    .approval-banner.success,
+    .final-status.success,
+    .eta-banner {
+      color: #166534;
+      background: rgba(240, 253, 244, 0.96);
+      border-color: rgba(21, 128, 61, 0.18);
+    }
+
+    .badge-neutral {
+      background: rgba(15, 23, 42, 0.03);
+      color: #475569;
+    }
+
+    .badge-complete {
+      background: rgba(21, 128, 61, 0.1);
+      color: #166534;
+      border-color: rgba(21, 128, 61, 0.18);
+    }
+
+    .badge-simulated {
+      background: rgba(146, 64, 14, 0.08);
+      color: #92400e;
+      border-color: rgba(146, 64, 14, 0.14);
+    }
+
+    .badge-critical {
+      background: rgba(220, 38, 38, 0.08);
+      color: #991b1b;
+      border-color: rgba(220, 38, 38, 0.14);
+    }
+
+    .badge-high {
+      background: rgba(234, 88, 12, 0.08);
+      color: #9a3412;
+      border-color: rgba(234, 88, 12, 0.14);
+    }
+
+    .badge-medium {
+      background: rgba(202, 138, 4, 0.08);
+      color: #854d0e;
+      border-color: rgba(202, 138, 4, 0.14);
+    }
+
+    .badge-low,
+    .badge-non-blocking {
+      background: rgba(21, 128, 61, 0.08);
+      color: #166534;
+      border-color: rgba(21, 128, 61, 0.14);
+    }
+
+    .badge-blocking {
+      background: rgba(220, 38, 38, 0.08);
+      color: #991b1b;
+      border-color: rgba(220, 38, 38, 0.14);
+    }
+
+    .approval-card {
+      background:
+        linear-gradient(180deg, rgba(255, 251, 235, 0.9), rgba(255, 255, 255, 0.94)),
+        var(--bg-card);
+      border-color: rgba(202, 138, 4, 0.18);
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .empty-state {
+      border-color: rgba(15, 23, 42, 0.12);
+      color: var(--text-secondary);
+      background: rgba(248, 250, 252, 0.7);
+    }
+
+    .workspace-footer {
+      margin-top: 8px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    body.is-ready .opening-stage__content > *,
+    body.is-ready .opening-stage__visual > * {
+      animation: revealLift 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    body.is-ready .opening-stage__content > *:nth-child(2) {
+      animation-delay: 0.08s;
+    }
+
+    body.is-ready .opening-stage__content > *:nth-child(3) {
+      animation-delay: 0.16s;
+    }
+
+    body.is-ready .opening-stage__content > *:nth-child(4) {
+      animation-delay: 0.24s;
+    }
+
+    body.is-ready .opening-stage__content > *:nth-child(5) {
+      animation-delay: 0.32s;
+    }
+
+    body.is-ready .opening-stage__content > *:nth-child(6) {
+      animation-delay: 0.4s;
+    }
+
+    body.is-ready .opening-stage__visual > *:nth-child(1) {
+      animation-delay: 0.18s;
+    }
+
+    @media (max-width: 1200px) {
+      .app-shell {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .workspace-main {
+        order: 1;
+      }
+
+      .workspace-sidebar {
+        order: 2;
+        position: relative;
+        height: auto;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .opening-stage__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .opening-stage__visual {
+        min-height: 420px;
+      }
+
+      .overview-grid,
+      .guide-grid,
+      .control-layout,
+      .operations-grid,
+      .results-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .workspace-header {
+        flex-direction: column;
+      }
+
+      .workspace-header__actions {
+        min-width: 0;
+        grid-template-columns: 1fr;
+      }
+
+      .results-rail {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .workspace-header,
+      .workspace-content {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .opening-stage {
+        padding: 22px 18px;
+      }
+
+      .opening-stage__metrics,
+      .kinetic-board__timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .opening-stage__title {
+        font-size: 36px;
+      }
+
+      .opening-stage__visual {
+        min-height: auto;
+      }
+
+      .kinetic-board {
+        min-height: 360px;
+        padding: 18px;
+      }
+
+      .demo-card {
+        min-width: 132px;
+        padding: 12px;
+      }
+
+      .overview-grid,
+      .guide-grid,
+      .form-grid,
+      .snapshot-grid,
+      .brief-stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workspace-sidebar {
+        padding: 18px 14px;
+      }
+    }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
+      }
+    }
+
+    @keyframes floatHeroGlow {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(16px, -18px, 0) scale(1.08);
+      }
+    }
+
+    @keyframes pulseBeacon {
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.82;
+      }
+      50% {
+        transform: scale(1.12);
+        opacity: 1;
+      }
+    }
+
+    @keyframes tickerSlide {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes orbitSpin {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    @keyframes beamSweep {
+      0%,
+      100% {
+        opacity: 0.28;
+      }
+      50% {
+        opacity: 0.92;
+      }
+    }
+
+    @keyframes floatDemoCard {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0);
+      }
+      50% {
+        transform: translate3d(0, -10px, 0);
+      }
+    }
+
+    @keyframes revealPulse {
+      0%,
+      100% {
+        transform: translateY(0);
+        border-color: rgba(186, 230, 253, 0.12);
+      }
+      50% {
+        transform: translateY(-4px);
+        border-color: rgba(103, 232, 249, 0.24);
+      }
+    }
+
+    @keyframes sweepPanel {
+      0% {
+        transform: translateX(-120%);
+      }
+      55%,
+      100% {
+        transform: translateX(120%);
+      }
+    }
+
+    @keyframes revealLift {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
@@ -2112,6 +3866,24 @@
     }
 
     @media (max-width: 520px) {
+      .opening-stage__copy {
+        font-size: 14px;
+      }
+
+      .opening-stage__title {
+        font-size: 30px;
+      }
+
+      .opening-stage__actions,
+      .sample-actions {
+        flex-direction: column;
+      }
+
+      .opening-stage__actions > *,
+      .sample-actions > * {
+        width: 100%;
+      }
+
       .brand__logo-wrap {
         width: 38px;
         height: 38px;
@@ -2141,6 +3913,72 @@
       .health-ring::after {
         inset: 14px;
       }
+
+      .demo-card--risk,
+      .demo-card--source,
+      .demo-card--approval,
+      .demo-card--target {
+        position: absolute;
+        transform: none;
+        max-width: 136px;
+      }
+
+      .kinetic-board {
+        min-height: 272px;
+        padding: 14px;
+      }
+
+      .kinetic-board__header {
+        margin-bottom: 12px;
+      }
+
+      .kinetic-board__title strong {
+        font-size: 16px;
+      }
+
+      .kinetic-board__title span {
+        font-size: 11px;
+      }
+
+      .kinetic-board__network {
+        min-height: 180px;
+      }
+
+      .orbit-ring,
+      .beam {
+        display: none;
+      }
+
+      .network-core {
+        width: 112px;
+        height: 112px;
+      }
+
+      .network-core__inner {
+        width: 80px;
+        height: 80px;
+      }
+
+      .network-core__value {
+        font-size: 24px;
+      }
+
+      .demo-card--risk {
+        top: 10px;
+        right: 10px;
+      }
+
+      .demo-card--source {
+        left: 10px;
+        bottom: 10px;
+        top: auto;
+      }
+
+      .demo-card--approval,
+      .demo-card--target,
+      .kinetic-board__timeline {
+        display: none;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2155,204 +3993,396 @@
   </style>
 </head>
 <body>
-  <div class="ambient-scene" aria-hidden="true">
-    <div class="ambient-grid"></div>
-    <span class="ambient-orb ambient-orb--one"></span>
-    <span class="ambient-orb ambient-orb--two"></span>
-    <span class="ambient-orb ambient-orb--three"></span>
-    <span class="ambient-cloud ambient-cloud--one"></span>
-    <span class="ambient-cloud ambient-cloud--two"></span>
-    <span class="ambient-beam ambient-beam--one"></span>
-    <span class="ambient-beam ambient-beam--two"></span>
-    <span class="ambient-trace ambient-trace--one"></span>
-    <span class="ambient-trace ambient-trace--two"></span>
-    <span class="ambient-node ambient-node--one"></span>
-    <span class="ambient-node ambient-node--two"></span>
-    <span class="ambient-node ambient-node--three"></span>
-  </div>
-  <header class="topbar">
-    <div class="topbar__inner">
-      <div class="brand">
-        <div class="brand__text">
-          <span class="brand__name">MigrationOps Copilot</span>
-          <span class="brand__meta">Migration Validation</span>
+  <div class="app-shell">
+    <aside class="workspace-sidebar">
+      <section class="workspace-sidebar__brand">
+        <div class="workspace-sidebar__lockup">
+          <img class="workspace-sidebar__logo" src="/static/logo-inline-small.png" alt="MigrationOps Copilot logo">
+          <div>
+            <h1 class="workspace-sidebar__title">MigrationOps Copilot</h1>
+            <p class="workspace-sidebar__small">Enterprise migration assurance workspace</p>
+          </div>
         </div>
-      </div>
-      <div class="topbar__badges">
-        <span class="tech-badge">Microsoft Agent Framework</span>
-        <span class="tech-badge">Azure OpenAI</span>
-      </div>
-    </div>
-  </header>
-
-  <main class="page">
-    <section class="hero-layout">
-      <section class="hero-card">
-        <div class="eyebrow">Migration Validation Pipeline</div>
-        <h1 class="hero-title">Run a source-to-target migration analysis</h1>
-        <p class="hero-copy">
-          Compare live source and target environments using real SSL, HTTP, and DNS checks, then route the findings through a governed multi-agent workflow for risk assessment, diagnostics, and remediation planning.
+        <p class="workspace-sidebar__subtitle">
+          Internal operations console for validating source and target environments before traffic cutover.
         </p>
-
-        <div class="form-grid">
-          <div class="field">
-            <label for="sourceUrl">Source URL</label>
-            <div class="input-shell" data-field="source">
-              <span class="input-icon" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1.5a6.5 6.5 0 1 0 0 13a6.5 6.5 0 0 0 0-13Zm0 0c1.7 0 3.08 2.91 3.08 6.5S9.7 14.5 8 14.5m0-13c-1.7 0-3.08 2.91-3.08 6.5S6.3 14.5 8 14.5m-5.9-4.5h11.8M2.1 5h11.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <input id="sourceUrl" type="url" placeholder="https://source-site.com">
-            </div>
-          </div>
-          <div class="field">
-            <label for="targetUrl">Target URL</label>
-            <div class="input-shell" data-field="target">
-              <span class="input-icon" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none">
-                  <path d="M6.3 9.7 4.9 11.1a2.25 2.25 0 1 1-3.18-3.18l2.12-2.12A2.25 2.25 0 0 1 7.02 8.3m2.68-2.68 1.42-1.42a2.25 2.25 0 1 1 3.18 3.18l-2.12 2.12A2.25 2.25 0 0 1 8.98 7.7M5.7 10.3l4.6-4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <input id="targetUrl" type="url" placeholder="https://target-site.com">
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-actions">
-          <button id="analyzeButton" class="button-primary">Run Migration Analysis</button>
-        </div>
-
-        <div class="hero-meta">
-          <div class="hero-note">
-            Compares source and target environments using real SSL, HTTP, and DNS checks.
-          </div>
-          <label class="toggle" for="useMcp">
-            <input id="useMcp" type="checkbox">
-            Use MCP discovery
-          </label>
-        </div>
-
-        <div id="statusBar" class="status-bar"></div>
       </section>
 
-      <aside class="hero-aside">
-        <article class="aside-card">
-          <div class="aside-kicker">Mission Control</div>
-          <h2 class="aside-title">Grounded signals, staged reasoning, explicit governance.</h2>
-          <p class="aside-copy">
-            The UI is tuned for a fast demo: real network checks first, structured risk framing second, and a visible human approval gate before any simulated execution step.
+      <nav class="sidebar-nav" aria-label="Workspace navigation">
+        <div class="sidebar-nav__group-label">Workspace</div>
+        <a class="sidebar-nav__item is-active" href="#control-center"><span>Migration Control Center</span><span>Live</span></a>
+        <a class="sidebar-nav__item requires-analysis" href="#resultsSection"><span>Evidence Review</span><span>Live Data</span></a>
+        <a class="sidebar-nav__item requires-analysis" href="#riskCard"><span>Risk and Triage</span><span>Analysis</span></a>
+        <a class="sidebar-nav__item requires-analysis" href="#approvalCard"><span>Execution Controls</span><span>Approval</span></a>
+        <a class="sidebar-nav__item requires-analysis" href="#executionCard"><span>Audit Trail</span><span>Timeline</span></a>
+      </nav>
+
+      <article class="sidebar-card">
+        <div class="sidebar-card__eyebrow">Current mandate</div>
+        <h2 class="sidebar-card__title">Prevent silent migration regressions before production traffic moves.</h2>
+        <p class="sidebar-card__copy">
+          This workspace is optimized for change-review meetings: evidence first, AI interpretation second, approval always explicit.
+        </p>
+        <div class="sidebar-stat-list">
+          <div class="sidebar-stat"><strong>3</strong><span>Live discovery checks</span></div>
+          <div class="sidebar-stat"><strong>4</strong><span>Reasoning stages</span></div>
+          <div class="sidebar-stat"><strong>1</strong><span>Mandatory approval gate</span></div>
+        </div>
+      </article>
+
+      <article class="sidebar-card">
+        <div class="sidebar-card__eyebrow">Control posture</div>
+        <div class="sidebar-checklist">
+          <div>Discovery uses real SSL, HTTP, and DNS evidence from live endpoints.</div>
+          <div>Simulated remediation remains isolated from the real infrastructure plane.</div>
+          <div>Operator approval is required before the execution stage can proceed.</div>
+        </div>
+      </article>
+    </aside>
+
+    <div class="workspace-main">
+      <header class="workspace-header">
+        <div>
+          <div class="product-brand">
+            <img class="product-brand__logo" src="/static/logo.svg" alt="MigrationOps Copilot logo">
+            <div class="product-brand__lockup">
+              <p class="product-brand__name">MigrationOps Copilot</p>
+              <p class="product-brand__tagline">AI-assisted migration assurance for customer-facing cutovers</p>
+            </div>
+          </div>
+          <div class="workspace-header__eyebrow">Enterprise Migration Assurance</div>
+          <h1 class="workspace-header__title">Migration Control Center</h1>
+          <p class="workspace-header__copy">
+            Review live environment evidence, route issues through governed AI analysis, and hold remediation behind an explicit approval boundary.
           </p>
-          <div class="aside-metric-grid">
-            <div class="aside-metric">
-              <strong>3</strong>
-              <span>Live discovery checks</span>
+        </div>
+        <div class="workspace-header__actions">
+          <div class="workspace-meta">
+            <div class="workspace-meta__label">Program</div>
+            <div class="workspace-meta__value">Website Migration Validation</div>
+          </div>
+          <div class="workspace-meta">
+            <div class="workspace-meta__label">Operating Model</div>
+            <div class="workspace-meta__value">Human in the Loop</div>
+          </div>
+          <div class="workspace-meta">
+            <div class="workspace-meta__label">Execution Policy</div>
+            <div class="workspace-meta__value">Simulated Remediation</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace-content">
+        <section id="opening-stage" class="opening-stage" aria-label="Opening experience">
+          <div class="opening-stage__grid">
+            <div class="opening-stage__content">
+              <div class="opening-stage__kicker">Cutover confidence, staged like a product launch</div>
+              <h2 class="opening-stage__title">Catch the migration outage before your customers do.</h2>
+              <p class="opening-stage__copy">
+                MigrationOps Copilot turns cutover validation into a dramatic, buyer-friendly workflow: live infrastructure evidence, AI-assisted triage, a visible approval gate, and a guided demo that makes the value obvious in seconds.
+              </p>
+
+              <div class="opening-stage__actions">
+                <button id="guidedDemoButton" class="button-primary button-hero" type="button">Launch judge demo</button>
+                <a class="button-secondary button-hero-secondary" href="#control-center">Enter control center</a>
+                <a class="button-secondary button-hero-secondary" href="#workflow">Watch the workflow</a>
+              </div>
+
+              <div class="opening-stage__metrics">
+                <div class="opening-stage__metric">
+                  <span class="opening-stage__metric-value">3</span>
+                  <div class="opening-stage__metric-label">Live checks</div>
+                  <div class="opening-stage__metric-copy">SSL, HTTP, and DNS are captured from real endpoints.</div>
+                </div>
+                <div class="opening-stage__metric">
+                  <span class="opening-stage__metric-value">4</span>
+                  <div class="opening-stage__metric-label">AI stages</div>
+                  <div class="opening-stage__metric-copy">Risk, diagnostics, planning, and simulated execution.</div>
+                </div>
+                <div class="opening-stage__metric">
+                  <span class="opening-stage__metric-value">1</span>
+                  <div class="opening-stage__metric-label">Approval moment</div>
+                  <div class="opening-stage__metric-copy">A visible checkpoint before the system can advance.</div>
+                </div>
+              </div>
+
+              <div class="opening-stage__ticker" aria-hidden="true">
+                <div class="opening-stage__ticker-track">
+                  <div class="story-chip"><span class="story-chip__label">Live Signal</span><span class="story-chip__value">SSL trust drift detected</span></div>
+                  <div class="story-chip"><span class="story-chip__label">AI Insight</span><span class="story-chip__value">Root cause isolated in one pass</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Governance</span><span class="story-chip__value">Approval remains explicit</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Execution</span><span class="story-chip__value">Simulated remediation trail</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Buyer Story</span><span class="story-chip__value">Show value in under a minute</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Live Signal</span><span class="story-chip__value">SSL trust drift detected</span></div>
+                  <div class="story-chip"><span class="story-chip__label">AI Insight</span><span class="story-chip__value">Root cause isolated in one pass</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Governance</span><span class="story-chip__value">Approval remains explicit</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Execution</span><span class="story-chip__value">Simulated remediation trail</span></div>
+                  <div class="story-chip"><span class="story-chip__label">Buyer Story</span><span class="story-chip__value">Show value in under a minute</span></div>
+                </div>
+              </div>
             </div>
-            <div class="aside-metric">
-              <strong>4</strong>
-              <span>Reasoning stages</span>
-            </div>
-            <div class="aside-metric">
-              <strong>1</strong>
-              <span>Required approval gate</span>
+
+            <div class="opening-stage__visual">
+              <div class="kinetic-board">
+                <div class="kinetic-board__header">
+                  <div class="kinetic-board__title">
+                    <strong>Live Cutover Simulator</strong>
+                    <span>The opening motion previews what the product actually does once the demo starts.</span>
+                  </div>
+                  <div class="live-badge">Live</div>
+                </div>
+
+                <div class="kinetic-board__network">
+                  <div class="orbit-ring orbit-ring--outer">
+                    <span class="orbit-node"></span>
+                    <span class="orbit-node"></span>
+                    <span class="orbit-node"></span>
+                  </div>
+                  <div class="orbit-ring orbit-ring--mid">
+                    <span class="orbit-node"></span>
+                    <span class="orbit-node"></span>
+                  </div>
+                  <div class="beam beam--one"></div>
+                  <div class="beam beam--two"></div>
+                  <div class="beam beam--three"></div>
+
+                  <div class="network-core">
+                    <div class="network-core__inner">
+                      <div class="network-core__value">97</div>
+                      <div class="network-core__label">Live Score</div>
+                    </div>
+                  </div>
+
+                  <div class="demo-card demo-card--risk">
+                    <span class="demo-card__label">Risk signal</span>
+                    <span class="demo-card__title">502 surfaced in target lane</span>
+                    <div class="demo-card__copy"><strong>Critical</strong> regression appears before cutover.</div>
+                  </div>
+
+                  <div class="demo-card demo-card--source">
+                    <span class="demo-card__label">Source</span>
+                    <span class="demo-card__title">Healthy baseline</span>
+                    <div class="demo-card__copy">Stable SSL, stable DNS, 200 OK response profile.</div>
+                  </div>
+
+                  <div class="demo-card demo-card--approval">
+                    <span class="demo-card__label">Approval gate</span>
+                    <span class="demo-card__title">Human stays in control</span>
+                    <div class="demo-card__copy">The product pauses before simulated remediation advances.</div>
+                  </div>
+
+                  <div class="demo-card demo-card--target">
+                    <span class="demo-card__label">Target</span>
+                    <span class="demo-card__title">Mismatch isolated</span>
+                    <div class="demo-card__copy">AI-assisted triage turns raw drift into a decision trail.</div>
+                  </div>
+                </div>
+
+                <div class="kinetic-board__timeline">
+                  <div class="timeline-chip">
+                    <span class="timeline-chip__index">01</span>
+                    <div class="timeline-chip__title">Discover</div>
+                    <div class="timeline-chip__copy">Real endpoint telemetry lands first.</div>
+                  </div>
+                  <div class="timeline-chip">
+                    <span class="timeline-chip__index">02</span>
+                    <div class="timeline-chip__title">Explain</div>
+                    <div class="timeline-chip__copy">AI stages shape the incident story.</div>
+                  </div>
+                  <div class="timeline-chip">
+                    <span class="timeline-chip__index">03</span>
+                    <div class="timeline-chip__title">Approve</div>
+                    <div class="timeline-chip__copy">The operator decides what happens next.</div>
+                  </div>
+                  <div class="timeline-chip">
+                    <span class="timeline-chip__index">04</span>
+                    <div class="timeline-chip__title">Simulate</div>
+                    <div class="timeline-chip__copy">A safe action trail closes the loop.</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="aside-list">
-            <div class="aside-list-item">Direct Azure-backed agent flow remains unchanged. This layer only improves how evidence and decisions are surfaced.</div>
-            <div class="aside-list-item">Hosted MCP stays optional and is visually subordinate to the default reliable path.</div>
-            <div class="aside-list-item">Execution remains visibly simulated, with verification and final status separated from action logs.</div>
-          </div>
-        </article>
+        </section>
 
-        <article class="aside-card aside-card--compact">
-          <div class="aside-kicker">Demo Lens</div>
-          <p class="aside-copy">
-            Best screenshot path: run a broken migration first to surface a red risk state, then approve execution so the timeline clearly shows simulated remediation.
-          </p>
-          <div class="aside-panel-footer">
-            The design stays dark, high-contrast, and intentionally restrained so the product still reads as a real operator tool rather than a hackathon mockup.
-          </div>
-        </article>
-      </aside>
-    </section>
+        <section id="overview" class="overview-grid" aria-label="Executive summary">
+          <article class="overview-card">
+            <div class="overview-card__label">Control domain</div>
+            <div class="overview-card__value">SSL + DNS + HTTP</div>
+            <div class="overview-card__copy">Core migration failure modes are checked from live endpoints before any reasoning stage begins.</div>
+          </article>
+          <article class="overview-card">
+            <div class="overview-card__label">Decision model</div>
+            <div class="overview-card__value">Staged AI Review</div>
+            <div class="overview-card__copy">Risk, diagnostics, and remediation remain separated so each decision is easier to defend operationally.</div>
+          </article>
+          <article class="overview-card">
+            <div class="overview-card__label">Governance</div>
+            <div class="overview-card__value">Manual Approval</div>
+            <div class="overview-card__copy">No execution path is available until an operator explicitly approves the proposed remediation plan.</div>
+          </article>
+          <article class="overview-card">
+            <div class="overview-card__label">Auditability</div>
+            <div class="overview-card__value">Structured Output</div>
+            <div class="overview-card__copy">Snapshots, findings, agent outputs, and the execution trail remain visible in a single review workspace.</div>
+          </article>
+        </section>
 
-    <section class="signal-strip" aria-label="Key product signals">
-      <article class="signal-card">
-        <div class="signal-card__kicker">Ground truth</div>
-        <h2 class="signal-card__title">Real SSL, HTTP, and DNS checks</h2>
-        <p class="signal-card__copy">Discovery is anchored in live network data so the downstream agent stages start from deterministic evidence.</p>
-      </article>
-      <article class="signal-card">
-        <div class="signal-card__kicker">Workflow</div>
-        <h2 class="signal-card__title">Clear multi-stage progression</h2>
-        <p class="signal-card__copy">The stage rail below turns the agent sequence into something judges can understand at a glance during a short demo.</p>
-      </article>
-      <article class="signal-card">
-        <div class="signal-card__kicker">Governance</div>
-        <h2 class="signal-card__title">Human gate before execution</h2>
-        <p class="signal-card__copy">Approval is intentionally prominent so the boundary between analysis and action is visible and trustworthy.</p>
-      </article>
-    </section>
+        <section id="control-center" class="control-layout">
+          <section class="hero-card">
+            <div class="eyebrow">Validation Intake</div>
+            <h2 class="hero-title">Launch a governed migration review</h2>
+            <p class="hero-copy">
+              Provide the current production endpoint and the migration target. The platform will collect live evidence, compare environments, and prepare a reviewable remediation path.
+            </p>
 
-    <section class="pipeline-shell" aria-label="Pipeline progress">
-      <div class="pipeline-shell__header">
-        <div class="pipeline-shell__title">
-          <strong>Workflow Progress</strong>
-          <span>Discovery, reasoning, approval, and execution are surfaced as separate operator-visible states.</span>
-        </div>
-        <span class="tech-badge">Human-in-the-loop</span>
-      </div>
-      <div id="pipelineSteps" class="pipeline">
-        <div class="pipeline-step" data-step="discovery" data-state="inactive">
-          <span class="pipeline-dot">1</span>
-          <span class="pipeline-label">Discovery</span>
-        </div>
-        <div class="pipeline-step" data-step="risk" data-state="inactive">
-          <span class="pipeline-dot">2</span>
-          <span class="pipeline-label">Risk Assessment</span>
-        </div>
-        <div class="pipeline-step" data-step="diagnostics" data-state="inactive">
-          <span class="pipeline-dot">3</span>
-          <span class="pipeline-label">Diagnostics</span>
-        </div>
-        <div class="pipeline-step" data-step="plan" data-state="inactive">
-          <span class="pipeline-dot">4</span>
-          <span class="pipeline-label">Remediation Plan</span>
-        </div>
-        <div class="pipeline-step" data-step="approval" data-state="inactive">
-          <span class="pipeline-dot">5</span>
-          <span class="pipeline-label">Approval</span>
-        </div>
-        <div class="pipeline-step" data-step="execution" data-state="inactive">
-          <span class="pipeline-dot">6</span>
-          <span class="pipeline-label">Execution</span>
-        </div>
-      </div>
-    </section>
+            <div class="form-grid">
+              <div class="field">
+                <label for="sourceUrl">Source URL</label>
+                <div class="input-shell" data-field="source">
+                  <span class="input-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none">
+                      <path d="M8 1.5a6.5 6.5 0 1 0 0 13a6.5 6.5 0 0 0 0-13Zm0 0c1.7 0 3.08 2.91 3.08 6.5S9.7 14.5 8 14.5m0-13c-1.7 0-3.08 2.91-3.08 6.5S6.3 14.5 8 14.5m-5.9-4.5h11.8M2.1 5h11.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <input id="sourceUrl" type="url" placeholder="https://source-site.com">
+                </div>
+                <div class="field-hint">System-of-record URL used as the baseline for the migration comparison.</div>
+              </div>
+              <div class="field">
+                <label for="targetUrl">Target URL</label>
+                <div class="input-shell" data-field="target">
+                  <span class="input-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none">
+                      <path d="M6.3 9.7 4.9 11.1a2.25 2.25 0 1 1-3.18-3.18l2.12-2.12A2.25 2.25 0 0 1 7.02 8.3m2.68-2.68 1.42-1.42a2.25 2.25 0 1 1 3.18 3.18l-2.12 2.12A2.25 2.25 0 0 1 8.98 7.7M5.7 10.3l4.6-4.6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <input id="targetUrl" type="url" placeholder="https://target-site.com">
+                </div>
+                <div class="field-hint">Candidate destination that will be validated before cutover or DNS switch.</div>
+              </div>
+            </div>
 
-    <section class="guide-grid" aria-label="Context and operator guidance">
-      <article class="guide-card">
-        <div class="guide-kicker">Reading the output</div>
-        <h2 class="guide-title">Discovery is the evidence layer</h2>
-        <p class="guide-copy">Source and target snapshot summaries stay near the top so judges can see the real data before they read any LLM-generated reasoning.</p>
-        <div class="guide-stack">
-          <div class="guide-pill"><span>Health score ring</span><strong>Fast migration signal</strong></div>
-          <div class="guide-pill"><span>Finding rows</span><strong>Stable IDs + severities</strong></div>
-        </div>
-      </article>
+            <div class="hero-actions">
+              <button id="analyzeButton" class="button-primary">Run Migration Analysis</button>
+              <a class="button-secondary" href="#workflow">See workflow</a>
+              <a class="button-secondary requires-analysis" href="#resultsSection">Jump to results</a>
+            </div>
 
-      <article class="guide-card">
-        <div class="guide-kicker">Decision support</div>
-        <h2 class="guide-title">Risk and diagnostics stay separate</h2>
-        <p class="guide-copy">Risk frames the decision, diagnostics explain the cause, and the remediation card turns that into concrete go-live actions without collapsing the stages together.</p>
-      </article>
+            <div class="hero-meta">
+              <div class="hero-note">
+                Live discovery captures SSL trust, HTTP behavior, and DNS resolution before the AI stages start.
+              </div>
+              <label class="toggle" for="useMcp">
+                <input id="useMcp" type="checkbox">
+                Route discovery through MCP
+              </label>
+            </div>
 
-      <article class="guide-card">
-        <div class="guide-kicker">Execution boundary</div>
-        <h2 class="guide-title">Simulation remains explicit</h2>
-        <p class="guide-copy">The approval section and execution timeline are deliberately styled as a distinct governance zone so no one mistakes simulated actions for live infrastructure changes.</p>
-      </article>
-    </section>
+            <div class="policy-row" aria-label="Control policies">
+              <span class="policy-pill">Evidence-first workflow</span>
+              <span class="policy-pill">Bounded AI reasoning</span>
+              <span class="policy-pill">Explicit human approval</span>
+            </div>
+
+            <div class="sample-strip">
+              <div class="sample-strip__label">Try sample scenarios</div>
+              <div class="sample-actions">
+                <button id="sampleHealthyButton" class="button-secondary sample-button" type="button">Healthy baseline</button>
+                <button id="sampleSslButton" class="button-secondary sample-button" type="button">Broken SSL</button>
+                <button id="sampleHttpButton" class="button-secondary sample-button" type="button">Server error</button>
+              </div>
+            </div>
+
+            <div id="statusBar" class="status-bar"></div>
+          </section>
+
+          <aside class="support-stack">
+            <article class="section-panel">
+              <div class="section-panel__eyebrow">Operating model</div>
+              <h2 class="section-panel__title">Designed to sell the product, not just explain the system.</h2>
+              <p class="section-panel__copy">
+                The interface now focuses on one obvious primary action, a clear workflow story, and a cleaner product posture instead of decorative pseudo-controls.
+              </p>
+              <div class="brief-stat-grid">
+                <div class="brief-stat">
+                  <strong>Direct</strong>
+                  <span>Default discovery path</span>
+                  <p>Fastest route to a live migration readout.</p>
+                </div>
+                <div class="brief-stat">
+                  <strong>Optional</strong>
+                  <span>MCP integration</span>
+                  <p>Available when teams need tool-routed discovery.</p>
+                </div>
+                <div class="brief-stat">
+                  <strong>Visible</strong>
+                  <span>Audit-friendly outputs</span>
+                  <p>Evidence, reasoning, and execution trail stay readable.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="section-panel">
+              <div class="section-panel__eyebrow">Why teams buy this</div>
+              <div class="brief-list">
+                <div>It turns post-migration validation into a repeatable operating workflow instead of tribal knowledge and ad-hoc scripts.</div>
+                <div>It gives stakeholders a visible approval checkpoint before any remediation logic advances into execution.</div>
+                <div>It keeps the proof trail close to the recommendation so the product feels trustworthy during demos and evaluations.</div>
+              </div>
+            </article>
+          </aside>
+        </section>
+
+        <section id="workflow" class="operations-grid">
+          <section class="pipeline-shell" aria-label="Pipeline progress">
+            <div class="pipeline-shell__header">
+              <div class="pipeline-shell__title">
+                <strong>Operational Workflow</strong>
+                <span>Every stage remains distinct so analysts can separate observed evidence from AI interpretation and simulated execution.</span>
+              </div>
+              <span class="tech-badge">Approval Controlled</span>
+            </div>
+            <div id="pipelineSteps" class="pipeline">
+              <div class="pipeline-step" data-step="discovery" data-state="inactive">
+                <span class="pipeline-dot">1</span>
+                <span class="pipeline-label">Discovery</span>
+              </div>
+              <div class="pipeline-step" data-step="risk" data-state="inactive">
+                <span class="pipeline-dot">2</span>
+                <span class="pipeline-label">Risk Assessment</span>
+              </div>
+              <div class="pipeline-step" data-step="diagnostics" data-state="inactive">
+                <span class="pipeline-dot">3</span>
+                <span class="pipeline-label">Diagnostics</span>
+              </div>
+              <div class="pipeline-step" data-step="plan" data-state="inactive">
+                <span class="pipeline-dot">4</span>
+                <span class="pipeline-label">Remediation Plan</span>
+              </div>
+              <div class="pipeline-step" data-step="approval" data-state="inactive">
+                <span class="pipeline-dot">5</span>
+                <span class="pipeline-label">Approval</span>
+              </div>
+              <div class="pipeline-step" data-step="execution" data-state="inactive">
+                <span class="pipeline-dot">6</span>
+                <span class="pipeline-label">Execution</span>
+              </div>
+            </div>
+          </section>
+
+          <aside class="section-panel">
+            <div class="section-panel__eyebrow">Control objectives</div>
+            <h2 class="section-panel__title">What the operator should learn from this run</h2>
+            <div class="control-list">
+              <div>Whether the target environment degrades SSL, DNS, or HTTP health relative to the source.</div>
+              <div>Whether the risk profile is severe enough to block cutover or require immediate remediation.</div>
+              <div>Whether the proposed action plan is safe enough to approve for simulated execution review.</div>
+            </div>
+          </aside>
+        </section>
+
+    <section id="analysisModeBanner" class="analysis-mode-banner" hidden></section>
 
     <section id="resultsSection" class="results" hidden>
       <div class="results-layout">
@@ -2583,11 +4613,13 @@
       </div>
     </section>
 
-    <footer class="footer">
+        <footer class="footer workspace-footer">
       <div>Built with Microsoft Agent Framework &amp; Azure OpenAI</div>
       <div>MigrationOps Copilot — Microsoft AI Dev Days Hackathon 2026</div>
     </footer>
-  </main>
+      </main>
+    </div>
+  </div>
 
   <script>
     const sourceUrlInput = document.getElementById("sourceUrl");
@@ -2596,7 +4628,14 @@
     const analyzeButton = document.getElementById("analyzeButton");
     const approveButton = document.getElementById("approveButton");
     const rejectButton = document.getElementById("rejectButton");
+    const sampleHealthyButton = document.getElementById("sampleHealthyButton");
+    const sampleSslButton = document.getElementById("sampleSslButton");
+    const sampleHttpButton = document.getElementById("sampleHttpButton");
+    const guidedDemoButton = document.getElementById("guidedDemoButton");
     const statusBar = document.getElementById("statusBar");
+    const analysisModeBanner = document.getElementById("analysisModeBanner");
+    const deferredAnalysisLinks = Array.from(document.querySelectorAll(".requires-analysis"));
+    const sidebarLinks = Array.from(document.querySelectorAll(".sidebar-nav__item"));
 
     const resultsSection = document.getElementById("resultsSection");
     const errorCard = document.getElementById("errorCard");
@@ -2669,6 +4708,12 @@
 
     let currentAnalysisId = null;
 
+    function setActiveNav(hash = "#control-center") {
+      sidebarLinks.forEach((link) => {
+        link.classList.toggle("is-active", link.getAttribute("href") === hash);
+      });
+    }
+
     function setButtonLoading(button, isLoading, text, loadingText) {
       button.disabled = isLoading;
       button.textContent = isLoading ? loadingText : text;
@@ -2683,6 +4728,25 @@
       if (!spinning) {
         statusBar.textContent = message;
       }
+    }
+
+    function setAnalysisModeBanner(mode) {
+      analysisModeBanner.hidden = false;
+      analysisModeBanner.innerHTML = "";
+
+      const title = document.createElement("strong");
+      const body = document.createElement("p");
+
+      if (mode === "deterministic") {
+        title.textContent = "Demo-ready mode is active";
+        body.textContent = "Azure reasoning is not configured, so the app is using deterministic migration analysis and simulated execution outputs. The full workflow stays usable for demos, trials, and product evaluation.";
+      } else {
+        title.textContent = "Azure reasoning is active";
+        body.textContent = "This run is using the configured Azure-backed reasoning pipeline for risk assessment, diagnostics, planning, and execution orchestration.";
+      }
+
+      analysisModeBanner.appendChild(title);
+      analysisModeBanner.appendChild(body);
     }
 
     function showCard(cardElement) {
@@ -3481,6 +5545,8 @@
     function resetUI() {
       setFlowState("idle");
       currentAnalysisId = null;
+      analysisModeBanner.hidden = true;
+      analysisModeBanner.innerHTML = "";
       resultsSection.hidden = true;
       clearError();
       clearApprovalNotice();
@@ -3491,6 +5557,72 @@
       approveButton.disabled = true;
       rejectButton.disabled = true;
       sessionModeValue.textContent = useMcpInput.checked ? "MCP" : "Direct";
+      setActiveNav("#control-center");
+    }
+
+    function applySampleScenario(kind) {
+      if (kind === "healthy") {
+        sourceUrlInput.value = "https://example.com";
+        targetUrlInput.value = "https://example.com";
+        useMcpInput.checked = false;
+        setStatus("Loaded a healthy baseline sample. Run the analysis to see a low-risk outcome.");
+        return;
+      }
+
+      if (kind === "ssl") {
+        sourceUrlInput.value = "https://example.com";
+        targetUrlInput.value = "https://expired.badssl.com/";
+        useMcpInput.checked = false;
+        setStatus("Loaded a broken SSL sample designed to show a blocking migration risk.");
+        return;
+      }
+
+      sourceUrlInput.value = "https://example.com";
+      targetUrlInput.value = "https://httpstat.us/502";
+      useMcpInput.checked = false;
+      setStatus("Loaded a server-error sample designed to show application failure on the target.");
+    }
+
+    function hasAnalysisResults() {
+      return !resultsSection.hidden && Boolean(currentAnalysisId);
+    }
+
+    async function runSampleScenario(kind) {
+      applySampleScenario(kind);
+      document.getElementById("control-center")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveNav("#control-center");
+      await delay(250);
+      await handleAnalyze();
+    }
+
+    async function launchGuidedDemo() {
+      await runSampleScenario("ssl");
+    }
+
+    async function navigateToHash(hash) {
+      if (!hash) {
+        return;
+      }
+
+      const analysisHashes = new Set(["#resultsSection", "#riskCard", "#approvalCard", "#executionCard"]);
+      if (analysisHashes.has(hash) && !hasAnalysisResults()) {
+        setStatus("No analysis is open yet. Launching the judge demo so there is live content to navigate.");
+        await launchGuidedDemo();
+      }
+
+      const target = document.querySelector(hash);
+      if (!target) {
+        return;
+      }
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveNav(hash);
+    }
+
+    async function handleDeferredLink(event) {
+      event.preventDefault();
+      const hash = event.currentTarget.getAttribute("href");
+      await navigateToHash(hash);
     }
 
     function renderDiscovery(data) {
@@ -3598,6 +5730,7 @@
 
         const data = await response.json();
         currentAnalysisId = data.analysis_id;
+        setAnalysisModeBanner(data.reasoning_mode || "azure-ai");
 
         renderDiscovery(data.discovery);
         showCard(discoveryCard);
@@ -3619,7 +5752,12 @@
         rejectButton.disabled = false;
         sessionApprovalValue.textContent = "Awaiting";
         setFlowState("approval");
-        setStatus("Analysis complete. Review the findings and choose whether to approve remediation.");
+        setActiveNav("#resultsSection");
+        if ((data.reasoning_mode || "azure-ai") === "deterministic") {
+          setStatus("Analysis complete in deterministic demo mode. Review the findings and approve or reject the simulated remediation plan.");
+        } else {
+          setStatus("Analysis complete. Review the findings and choose whether to approve remediation.");
+        }
       } catch (error) {
         const message = error instanceof TypeError
           ? "Cannot connect to backend. Run `python app.py` first."
@@ -3682,6 +5820,7 @@
         setPipelineStep("execution", "complete");
         sessionApprovalValue.textContent = "Approved";
         setFlowState("complete");
+        setActiveNav("#executionCard");
         setApprovalNotice("success", "Execution was approved. The executor ran simulated remediation steps and performed post-action verification.");
         setStatus("Execution completed.");
       } catch {
@@ -3697,8 +5836,22 @@
     analyzeButton.addEventListener("click", handleAnalyze);
     approveButton.addEventListener("click", () => executeDecision(true));
     rejectButton.addEventListener("click", () => executeDecision(false));
+    sampleHealthyButton.addEventListener("click", () => runSampleScenario("healthy"));
+    sampleSslButton.addEventListener("click", () => runSampleScenario("ssl"));
+    sampleHttpButton.addEventListener("click", () => runSampleScenario("http"));
+    guidedDemoButton.addEventListener("click", launchGuidedDemo);
+    deferredAnalysisLinks.forEach((link) => link.addEventListener("click", handleDeferredLink));
+    sidebarLinks
+      .filter((link) => !link.classList.contains("requires-analysis"))
+      .forEach((link) => {
+        link.addEventListener("click", async (event) => {
+          event.preventDefault();
+          await navigateToHash(link.getAttribute("href"));
+        });
+      });
 
     window.addEventListener("load", () => {
+      document.body.classList.add("is-ready");
       sourceUrlInput.value = "";
       targetUrlInput.value = "";
       sourceUrlInput.focus();

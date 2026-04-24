@@ -58,6 +58,7 @@ async def analyze(request: AnalyzeRequest) -> dict[str, object]:
 
     return {
         "analysis_id": analysis_id,
+        "reasoning_mode": outputs.get("reasoning_mode", "azure-ai"),
         "discovery": {
             "comparison_report": outputs["discovery"],
             "changes": comparison["changes"],
